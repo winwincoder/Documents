@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "recordingCallback(void*, unsigned long*, AudioTimeStamp const*, unsigned long, unsigned long, AudioBufferList*):SimpleAudioUnit.mm">
+         <PersistentStrings>
+            <PersistentString
+               value = "">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[echoCancelBuffer pop:EchoData:Size:]:echoCancelBuffer.mm">
+      </ContextState>
+      <ContextState
+         contextName = "RecordDataCallBack(unsigned short*, int, double):SimpleSpeech.mm">
+         <PersistentStrings>
+            <PersistentString
+               value = "samples[0]">
+            </PersistentString>
+            <PersistentString
+               value = "samples[1]">
+            </PersistentString>
+            <PersistentString
+               value = "samples[2]">
+            </PersistentString>
+            <PersistentString
+               value = "samples[3]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[OpenALRecorder captureSamples:bufSize:]:OpenALRecorder.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "t[3]">
+            </PersistentString>
+            <PersistentString
+               value = "t[4]">
+            </PersistentString>
+            <PersistentString
+               value = "t[5]">
+            </PersistentString>
+            <PersistentString
+               value = "t[0]">
+            </PersistentString>
+            <PersistentString
+               value = "t[1]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>
