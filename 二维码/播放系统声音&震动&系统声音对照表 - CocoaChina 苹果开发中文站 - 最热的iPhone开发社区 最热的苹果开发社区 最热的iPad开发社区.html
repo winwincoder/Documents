@@ -1,0 +1,608 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	
+	<title>播放系统声音&震动&系统声音对照表 -  CocoaChina 苹果开发中文站 - 最热的iPhone开发社区 最热的苹果开发社区 最热的iPad开发社区</title>
+    <meta name="keywords" content="系统,声音,对照表,震动,播放,iPhone开发,iOS开发,iPad开发,Mac开发,苹果开发中文站,iPhone开发中文站,CocoaChina首页, Mac OS开发, Cocoa介绍,移动互联网,触控科技,Cocoa,Apple,developer,iOS,iPhone,iPad,iMac,iPod Touch,iPhone5,iPhone4S,iPad3,招聘,iPhone程序员,Objective-c,iPhone应用外包,ios6,ios面试,Cocos2d-x,cocos2d,iTunes,App Store,苹果开发" />
+	<meta name="description" content=" - CocoaChina 开发讨论区 最热的iOS开发论坛| 最热的Mac开发论坛 | 最热的iPhone开发论坛 | 最热的iPad开发论坛" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0" name="viewport">
+	<meta name="baidu-tc-cerfication" content="3300a939a1098c27e94457b75a0bb8c1" />		
+	<link rel="stylesheet" href="/cms/templets/style/global.css?20151" media="all">	
+	<link rel="stylesheet" href="/cms/templets/style/index.css?2015" media="all">	
+	<link href="/cms/templets/style/module.css?2015" rel="stylesheet">
+	<link href="/cms/templets/style/style.css?20151" rel="stylesheet">
+	<script src="/cms/templets/js/jquery-1.7.2.min.js?2015" type="text/javascript"></script>
+	<script type='text/javascript' src='http://js.adm.cnzz.net/js/abase.js'></script>
+	
+	<script>
+		var _hmt = _hmt || [];
+		(function() {
+		  var hm = document.createElement("script");
+		  hm.src = "//hm.baidu.com/hm.js?88399e4c4cf744609c4fc8c3a8935691";
+		  var s = document.getElementsByTagName("script")[0]; 
+		  s.parentNode.insertBefore(hm, s);
+		})();
+	</script>	
+</head>
+<body>
+<!--top-->
+<div class="top">
+	<div id="topshow" class="t-wrap"></div>
+</div>	
+<!--./top-->
+<div class="header">
+	<div class="h-wrap">
+    	<div class="h-logo">
+        	<a href="/"  title="" style="margin: 0 37px 0 10px;float:left;"><img src="http://cc.cocimg.com/cms/templets/images/logo.png?1" height='53'></a>
+            <div class="search">
+            	<form action="/cms/plus/search.php" id="searchform" name="formsearch" method="post" target="_blank">
+					<input type="hidden" name="kwtype" value="0" />
+					<input type="hidden" name="searchtype" value="titlekeyword" />				
+					<input name="keyword" value="" type="text" id="search_keyword" placeholder="站内搜索">
+                    <input type="button" class="ser-btn" value="" onClick="search_check()">
+				</form>
+                <div class="h-tags clearfix">
+                	<a href="http://www.cocoachina.com/cms/plus/search.php?kwtype=0&keyword=iOS+8&searchtype=titlekeyword"  title="" target="_blank">iOS 8</a>
+                    <a href="http://www.cocoachina.com/cms/plus/search.php?kwtype=0&keyword=Swift&searchtype=titlekeyword" title="" target="_blank">Swift</a>
+                    <a href="http://www.cocoachina.com/cms/plus/search.php?kwtype=0&keyword=App Store&searchtype=titlekeyword" title="" target="_blank">App Store</a>
+                    <a href="http://www.cocoachina.com/cms/plus/search.php?kwtype=0&keyword=Apple Watch&searchtype=titlekeyword" title="" target="_blank">Apple Watch</a>
+                    <a href="http://www.cocoachina.com/cms/plus/search.php?kwtype=0&keyword=Metal&searchtype=titlekeyword" title="" target="_blank">Metal</a>
+                    <a href="http://www.cocoachina.com/cms/plus/search.php?kwtype=0&keyword=Cocos%E5%BC%95%E6%93%8E&searchtype=titlekeyword" title="" target="_blank">Cocos引擎</a>
+                    <a href="http://www.cocoachina.com/cms/plus/search.php?kwtype=0&keyword=%E6%89%8B%E6%B8%B8&searchtype=titlekeyword" title="" target="_blank">手游</a>
+                </div>
+            </div>
+            <div class="cc-ad1">
+				<script>CNZZ_SLOT_RENDER('323844');</script>
+            </div>
+        </div>
+        
+        <div class="h-nav">        	          	
+            <ul class="h-navl" >
+               	<li class="navl-1"><a id="ios" href="/ios/" title="ios">iOS开发</a></li>
+                <li class="navl-2"><a id="app_store" href="/appstore/" title="appstore">App Store研究</a></li>
+                <li class="navl-3"><a id="mac" href="/mac/" title="mac">Mac开发</a></li>
+                <li class="navl-4"><a id="design" href="/design/" title="design">产品设计</a></li>
+                <li class="navl-5"><a id="cocos" href="/cocos/" title="cocos">Cocos引擎</a></li>
+                <li class="navl-6"><a id="webapp" href="/webapp/" title="webapp">WebApp</a></li>
+                <li class="navl-1"><a id="swift" href="/swift/" title="swift" >Swift</a></li>
+                <li class="navl-2"><a id="game" href="/game/" title="game">游戏开发</a></li>
+                <li class="navl-3"><a id="apple" href="/apple/" title="apple">苹果相关</a></li>
+                <li class="navl-4"><a id="market" href="/market/" title="market">营销推广</a></li>
+                <li class="navl-5"><a id="industry" href="/industry/" title="industry">业界动态</a></li>
+                <li class="navl-6"><a id="programmer" href="/programmer/" title="programmer">程序人生</a></li>
+            </ul> 
+            <ul class="h-navr" >
+               	<li><a target="_blank" href="/bbs/" title="bbs">论坛</a></li>
+                <li><a target="_blank" href="http://code.cocoachina.com/" title="code">代码</a></li>
+                <li><a target="_blank" href="/special/index.html" title="special">专题</a></li>
+                <li><a target="_blank" href="/events/" title="events">活动</a></li>
+                <li class="navr-last"><a target="_blank" href="http://job.cocoachina.com/" title="job">招聘</a></li>
+            </ul>          
+        </div>
+    </div>
+</div>
+
+
+<div class="middle">
+<script language="javascript">
+    function IsPC() { 
+		var userAgentInfo = navigator.userAgent; 
+		var Agents = new Array("Android", "iPhone", "SymbianOS", "Windows Phone", "iPod"); 
+		var flag = true; 
+		for (var v = 0; v < Agents.length; v++) { 
+		if (userAgentInfo.indexOf(Agents[v]) > 0) { flag = false; break; } 
+		} 
+		return flag; 
+	}
+    if (!IsPC()){
+           window.location.href = "http://www.cocoachina.com/cms/wap.php?action=article&id=5705"; 
+    }
+</script>
+        <div class="m-cols clearfix">
+        	<div class="m-rcol float-r">
+            	<div class="mr-fast">
+                	<h2>开发者通道</h2>
+                    <ul class="clearfix">
+                    	<li><a href="http://brand.cocoachina.com" target="_blank"><span class="rf1">排行榜</span></a></li>
+                        <li><a href="http://d.cocoachina.com/code/" target="_blank"><span class="rf2">代码库</span></a></li>
+                        <li class="rlast"><a href="http://d.cocoachina.com/books/" target="_blank"><span class="rf3">图书库</span></a></li>
+                        <li><a href="http://d.cocoachina.com/sites/" target="_blank"><span class="rf4">网站库</span></a></li>
+                        <li><a href="http://d.cocoachina.com/promocode/" target="_blank"><span class="rf5">发码区</span></a></li>
+                        <li class="rlast"><a href="http://d.cocoachina.com/tools/" target="_blank"><span class="rf6">工具库</span></a></li>
+                        <li><a href="http://d.cocoachina.com/job" target="_blank"><span class="rf7">招聘区</span></a></li>
+                        <li><a href="http://d.cocoachina.com/task/lists" target="_blank"><span class="rf8">外包区</span></a></li>
+                        <li class="rlast"><a href="http://ask.cocoachina.com" target="_blank"><span class="rf9">问答区</span></a></li>
+                    </ul>
+                </div>
+                <!-- 广告位：文章阅读页面右侧的广告位-->
+                
+                <div class="mr-ads">
+                	<h2>关注CocoaChina</h2>
+                    <div class="clearfix mr-cont">
+                    	<p class="float-l">
+                        	<img src="/cms/templets/img_cocos/cocoachina-weixin-100.jpg" width="100" height="100" alt="关注CocoaChina微信 获取每日文章推荐" /><br />
+                            关注微信
+                        </p>
+                        <p class="float-l">
+                        	<img src="/cms/templets/img_cocos/cocoachina-mobile-100.jpg" width="100" height="100" alt="扫一扫 浏览CocoaChina移动版" /><br />
+                            移动版
+                        </p>
+                    </div>
+              	</div>
+                <div class="mr-ads-btm"></div>
+                
+                <div class="mr-rpo">
+                	<ul class="mrpo-nav clearfix">
+                    	<li class="first cur"><a>最近更新</a></li>
+                        <li class="last cur"><div></div></li>
+                    </ul>
+                    <div class="mrpo-list">
+                    	<ul>
+                        	<li class="first">
+                            	<div class="col1">1</div>
+                            	<div>
+                                	<a href="/downloads/code/2013/0514/6190.html" class="mrpol-ttl" title="iOS调用webservice">iOS调用webservice</a>
+                          			<p>2013-05-14</p>
+                               	</div>
+                            </li>
+<li>
+                            	<div class="col1">2</div>
+                            	<div>
+                                	<a href="/downloads/code/2013/0510/6169.html" class="mrpol-ttl" title="图片加水印">图片加水印</a>
+                          			<p>2013-05-10</p>
+                               	</div>
+                            </li>
+<li>
+                            	<div class="col1">3</div>
+                            	<div>
+                                	<a href="/downloads/code/2013/0428/6093.html" class="mrpol-ttl" title="圆形进度条(Circular Progress View)的绘制与使用">圆形进度条(Circular Progress View)的绘制与使用</a>
+                          			<p>2013-04-28</p>
+                               	</div>
+                            </li>
+<li>
+                            	<div class="col1">4</div>
+                            	<div>
+                                	<a href="/downloads/code/2013/0402/5924.html" class="mrpol-ttl" title="quartz 2d 绘图 工具箱">quartz 2d 绘图 工具箱</a>
+                          			<p>2013-04-02</p>
+                               	</div>
+                            </li>
+<li>
+                            	<div class="col1">5</div>
+                            	<div>
+                                	<a href="/downloads/code/2013/0329/5911.html" class="mrpol-ttl" title="CoreText绘制表情、链接以及图片等">CoreText绘制表情、链接以及图片等</a>
+                          			<p>2013-03-29</p>
+                               	</div>
+                            </li>
+<li>
+                            	<div class="col1">6</div>
+                            	<div>
+                                	<a href="/downloads/code/2013/0307/5774.html" class="mrpol-ttl" title="仿Vapp slider条">仿Vapp slider条</a>
+                          			<p>2013-03-07</p>
+                               	</div>
+                            </li>
+<li>
+                            	<div class="col1">7</div>
+                            	<div>
+                                	<a href="/downloads/code/2013/0304/5751.html" class="mrpol-ttl" title="检查AppStore是否有更新">检查AppStore是否有更新</a>
+                          			<p>2013-03-04</p>
+                               	</div>
+                            </li>
+<li>
+                            	<div class="col1">8</div>
+                            	<div>
+                                	<a href="/downloads/code/2013/0301/5748.html" class="mrpol-ttl" title="UIImage+iPhone5（自动判断iPhone5并选择相应背景图）">UIImage+iPhone5（自动判断iPhone5并选择相应背景图）</a>
+                          			<p>2013-03-01</p>
+                               	</div>
+                            </li>
+<li>
+                            	<div class="col1">9</div>
+                            	<div>
+                                	<a href="/downloads/code/2013/0225/5719.html" class="mrpol-ttl" title="用iOS6自带ocial.framework实现文字图片等分享">用iOS6自带ocial.framework实现文字图片等分享</a>
+                          			<p>2013-02-25</p>
+                               	</div>
+                            </li>
+<li class="last">
+                            	<div class="col1">10</div>
+                            	<div>
+                                	<a href="/downloads/code/2013/0225/5716.html" class="mrpol-ttl" title="仿国外一播放器做的导航栏">仿国外一播放器做的导航栏</a>
+                          			<p>2013-02-25</p>
+                               	</div>
+                            </li>
+
+                        </ul>
+                    </div>
+                    <div class="mrpo-btm"></div>
+                </div>
+                
+                
+                <div class="mr-app mr-cca">
+                	<div class="mr-app2">
+                    	<div class="mr-app3">
+                        	<ul id="nav-lv1" class="mra-nav clearfix">
+                            	<li class="first cur"><a>推荐内容</a></li>
+                                <li class="last"><a>热点内容</a></li>
+                            </ul>
+                            <div id="nav-lv2" class="mra-list mra-list1">
+                            	<ul style="display:block">
+                                	<li class="first">
+                                    	<a href="/downloads/code/2013/0108/5499.html" class="col4"><img src="/cms/uploads/allimg/130108/4196-13010QT6050-L.jpg" alt="超炫3D界面切换效果" /></a>
+                                        <a href="/downloads/code/2013/0108/5499.html" class="col5">超炫3D界面切换效果</a>
+                                    </li>
+<li>
+                                    	<a href="/downloads/code/2013/0105/5470.html" class="col4"><img src="/cms/uploads/allimg/130105/4196-130105122G70-L.jpg" alt="屏幕上方statusBar利用示例" /></a>
+                                        <a href="/downloads/code/2013/0105/5470.html" class="col5">屏幕上方statusBar利用示例</a>
+                                    </li>
+<li>
+                                    	<a href="/downloads/code/2012/1219/5368.html" class="col4"><img src="/cms/uploads/allimg/121219/4196-12121Z936430-L.jpg" alt="号码归属地查询" /></a>
+                                        <a href="/downloads/code/2012/1219/5368.html" class="col5">号码归属地查询</a>
+                                    </li>
+<li>
+                                    	<a href="/downloads/code/2012/1218/5359.html" class="col4"><img src="/cms/uploads/allimg/121218/4196-12121Q035420-L.jpg" alt="为ShareKit添加Sina Weibo会员分享 OAuth2.0授权和分享" /></a>
+                                        <a href="/downloads/code/2012/1218/5359.html" class="col5">为ShareKit添加Sina Weibo会员分享 OAuth2.0授权和分享</a>
+                                    </li>
+<li class="last">
+                                    	<a href="/downloads/code/2012/1217/5350.html" class="col4"><img src="/cms/uploads/allimg/121217/4196-12121G156250-L.gif" alt="粒子编辑器--外加Liscence---免费" /></a>
+                                        <a href="/downloads/code/2012/1217/5350.html" class="col5">粒子编辑器--外加Liscence---免费</a>
+                                    </li>
+
+                                </ul>
+                                
+                                <ul style="display:none">
+                                	<li class="first">
+                                    	<a href="/downloads/code/2012/1210/5291.html" class="col4"><img src="/cms/uploads/allimg/121210/4196-1212101041510-L.jpg" alt="仿陌陌个人资料照片墙" /></a>
+                                        <a href="/downloads/code/2012/1210/5291.html" class="col5">仿陌陌个人资料照片墙</a>
+                                    </li>
+<li>
+                                    	<a href="/downloads/code/2013/0514/6190.html" class="col4"><img src="/cms/uploads/allimg/130514/4196-1305141009590-L.jpg" alt="iOS调用webservice" /></a>
+                                        <a href="/downloads/code/2013/0514/6190.html" class="col5">iOS调用webservice</a>
+                                    </li>
+<li>
+                                    	<a href="/downloads/code/2013/0510/6169.html" class="col4"><img src="/cms/uploads/allimg/130510/4196-130510101S90-L.jpg" alt="图片加水印" /></a>
+                                        <a href="/downloads/code/2013/0510/6169.html" class="col5">图片加水印</a>
+                                    </li>
+<li>
+                                    	<a href="/downloads/code/2009/0612/310.html" class="col4"><img src="/cms/uploads/allimg/090612/1_224000K35.png" alt="three20源碼, facebook開源項目" /></a>
+                                        <a href="/downloads/code/2009/0612/310.html" class="col5">three20源碼, facebook開源項目</a>
+                                    </li>
+<li class="last">
+                                    	<a href="/downloads/code/2012/0706/4424.html" class="col4"><img src="/cms/uploads/allimg/120706/4064-120F60939400-L.jpg" alt="粒子编辑器" /></a>
+                                        <a href="/downloads/code/2012/0706/4424.html" class="col5">粒子编辑器</a>
+                                    </li>
+
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div> <!--right column-->
+        
+        
+        	<div class="mlist">
+            	<div class="cornertm">
+                	<div class="cornertl">
+                    	<div class="cornertr">
+                        	<a href='http://www.cocoachina.com/'>主页</a><span> > </span><a href='/downloads/'>下载频道</a><span> > </span><a href='/downloads/code/'>源码下载</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="content">
+                	<div id="sharecode" class="bdshare">
+                    	<!-- Baidu Button BEGIN -->
+                        <div id="bdshare" class="bdshare_t bds_tools_32 get-codes-bdshare">
+                        <a class="bds_tsina"></a>
+                        <a class="bds_tqq"></a>
+                        <a class="bds_qzone"></a>
+                        <a class="bds_renren"></a>
+                        <span class="bds_more"></span>
+                        </div>
+                        <script type="text/javascript" id="bdshare_js" data="type=tools&amp;mini=1&amp;uid=1298155" ></script>
+                        <script type="text/javascript" id="bdshell_js"></script>
+                        <script type="text/javascript">
+                        document.getElementById("bdshell_js").src = "http://bdimg.share.baidu.com/static/js/shell_v2.js?cdnversion=" + Math.ceil(new Date()/3600000)
+                        </script>
+                        <!-- Baidu Button END -->
+                    </div>
+                
+                	<h2 class="arcd-ttl">播放系统声音&震动&系统声音对照表</h2>
+                    <p class="arcd-info"><span>发布于：2013-02-22 10:56</span><span>阅读数：<script src="/cms/plus/count.php?view=no&aid=5705&mid=4196" type='text/javascript' language="javascript"></script></span></p>
+                    <div class="arcd-sum">
+                    	<div class="p1 ps1">
+                        	<table>
+                            	<tr>
+                                	 <td>
+                                     	<small>软件类型：</small><span>国产软件</span><br />
+                                        <small>界面语言：</small><span>简体中文</span><br />
+                                        <small>文件类型：</small><span>.zip</span><br />
+                                        <small>软件等级：</small><span>★★★☆☆</span><br />
+                                        <small>官方网址：</small><span>http://</span><br />
+                                        <small>下载次数：</small><span><script src="/cms/plus/disdls.php?aid=5705" language="javascript"></script></span>
+                                     </td>
+                                     <td>
+                                     	<small>授权方式：</small><span>共享软件</span><br />
+                                        <small>软件大小：</small><span>未知</span><br />
+                                        <small>运行环境：</small><span>Mac OS X</span><br />
+                                        <small>发布时间：</small><span>2013-02-22</span><br />
+                                        <small>演示网址：</small><span>http://</span>
+                                     </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <span class="pun pun1">“</span><span class="pun pun2" style="bottom:-25px">”</span>
+                    </div>
+                </div>
+            	<div class="cornerbm c10"><div class="cornerbl c11"><div class="cornerbr c12"></div></div></div>
+            
+            	<div class="detail">
+            		<div class="tags">
+                    	<a href="javascript:void(0)" onclick="ts('article',1)" class="font f1"></a>
+                    	<a href="javascript:void(0)" onclick="ts('article',-1)" class="font f2"></a>
+                        <a id="read" href="javascript:void(0);" class="font f3">阅读器</a>
+                    	
+                    	<p></p>
+                    </div>
+                    
+                    <div class="dtl-arc">
+                    	<div class="dtl-txt">
+                    		<div id="article">
+                            	<div class="labeltitle">软件介绍</div>
+                                <div class="labelc2">
+                                    <p>来自会员sunzhe的分享：</p>
+<p>&nbsp;</p>
+<p>import &lt;AudioToolbox/AudioToolbox.h&gt;<br />
+#import &lt;UIKit/UIKit.h&gt;&nbsp; <br />
+- (void)vibrate&nbsp;&nbsp; {&nbsp;&nbsp;&nbsp;&nbsp; <br />
+&nbsp; AudioServicesPlaySystemSound(SystemSoundID);<br />
+&nbsp;&nbsp; }<br />
+当参数为:kSystemSoundID_Vibrate 时就是震动;</p>
+<p><br />
+ps(只有iphone才能震动而且还得在设置里开启震动才行,其他的如touch就没有震动功能,别忘了导入AudioToolbox框架)。当参数为 1000-2000 之间数字时就是播放系统声音。</p>
+<p>&nbsp;</p>
+<p>系统声音对照表:</p>
+<p>There are some predefined system sounds, for the system sound ID in the range 1000 to 2000 (decimal), as shown below (from 2.0 to 5.0 beta). The system sounds are all stored in&nbsp; /System/Library/Audio/UISounds/.</p>
+<p>&nbsp;</p>
+<div><img style="cursor: pointer" border="0" alt="" width="650" height="3090" onclick="window.open('/cms/uploads/allimg/130222/4196_130222110914_1.jpg')" src="http://www.cocoachina.com/cms/uploads/allimg/130222/4196_130222110914_1.jpg" /><br />
+&nbsp;参考：<a href="http://iphonedevwiki.net/index.php/AudioServices"><strong><span style="color: #0000ff">http://iphonedevwiki.net/index.php/AudioServices</span></strong></a></div>
+<div>&nbsp;</div>
+<div>附件：Systemsound demo&nbsp;&nbsp;&nbsp;<span id="att_52041" sizset="59" sizcache="1"><img alt="" align="absMiddle" jquery1361500981328="14" src="http://cc.cocimg.com/bbs/images/wind/file/zip.gif" /><a target="_blank" href="http://www.cocoachina.com/bbs/job.php?action=download&amp;aid=52041"> <strong><span style="color: #0000ff">playSystemsound.zip</span></strong></a> (71 K) </span></div>
+<div>&nbsp;</div>
+<div>&nbsp;</div>
+<div><span sizset="59" sizcache="1">原帖地址：<a href="http://www.cocoachina.com/bbs/read.php?tid=134344"><span style="color: #0000ff"><strong>http://www.cocoachina.com/bbs/read.php?tid=134344</strong></span></a></span></div>
+<div>&nbsp;</div>
+<p>&nbsp;</p>
+                                </div>
+                                <div class="labeltitle">下载地址</div>
+                                <div class="labelc2">
+                                    <ul class="downurllist">
+                                        无链接信息！
+                                    </ul>
+                                </div>
+                                <div class="labeltitle">下载说明</div>
+                                <div class="labelc2">
+                                    <p>☉本站提供的某些资料需要注册论坛用户才可下载。<br />☉如果这个软件总是不能下载的请点击报告错误,谢谢合作!!<br />☉下载本站资源，如果服务器暂不能下载请过一段时间重试！<br />☉本站提供的一些商业软件是供学习研究之用，如用于商业用途，请购买正版。</p>
+                                </div>
+                            </div>
+                            
+                            <div class="arc-opt">
+                                <div class="float-l"><a class="praise store float-l" href="javascript:void(0)" onclick="add_favors(5705,'播放系统声音&震动&系统声音对照表')"></a></div><div id="newdigg" class="float-l"><a href="javascript:void(0)" onclick="postDigg('good',5705)" class="praise float-l" title="支持就要顶一下">(5)</a></div>
+                          	</div>
+                            <div class="text_news">
+                				<!--cnzz tui-->
+								<script  type="text/javascript" charset="utf-8"  src="http://tui.cnzz.net/cs.php?id=1000000654"></script>
+								<!--cnzz tui-->
+							</div>
+
+                        </div>
+                    </div><!--detail-->
+                    
+                    <div class="clearfixed">
+        
+<div class="bdsharebuttonbox" data-tag="share_1">
+	<a class="bds_tsina" data-cmd="tsina"></a>
+	<a class="bds_tqq" data-cmd="tqq"></a>
+	<a class="bds_qzone" data-cmd="qzone"></a>
+	<a class="bds_weixin" data-cmd="weixin"></a>
+	<a class="bds_sqq" data-cmd="sqq"></a>
+	<a class="bds_bdhome" data-cmd="bdhome"></a>
+</div>
+<script>
+	window._bd_share_config = {
+		common : {
+			bdText : '播放系统声音&震动&系统声音对照表 - 来自CocoaChina苹果开发中文站@CocoaChina ',	
+			bdDesc : "来自会员sunzhe的分享： 如题 #import AudioToolbox/AudioToolbox.h #import UIKit/UIKit.h - (void)vibrate { AudioServicesPlaySystemSound(SystemSoundID); } 当参数为:kSystemSoundID_Vibrate 时就是震动; ps(只有iphone才能震动而",	
+			bdUrl : "http://www.cocoachina.com/downloads/code/2013/0222/5705.html", 	
+			bdPic : 'http://www.cocoachina.com/cms/uploads/allimg/130222/4196-1302221059160-L.png'
+		},
+		share : [{
+			"bdSize" : 32
+		}],
+		slide : [{	   
+			bdImg : 0,
+			bdPos : "right",
+			bdTop : 100
+		}],
+		image : [{
+			viewType : 'list',
+			viewPos : 'top',
+			viewColor : 'black',
+			viewSize : '24',
+			viewList : ['tsina','tqq','qzone','weixin','sqq']
+		}]
+	}
+	with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+   </div>
+                    
+                    <!--bai fen dian-->
+  	 				<div id="dt_Rec"></div>
+                    
+                    <div class="arc-com">
+                    	<h2 style="margin-bottom:15px">现在评论</h2>
+                    	<!-- UY BEGIN -->
+                        <div id="uyan_frame"></div>
+                        <script type="text/javascript" id="UYScript" src="http://v1.uyan.cc/js/iframe.js?UYUserId=1519032" async=""></script>
+                        <!-- UY END -->
+                    </div> <!--文章评论-->
+                    
+                </div>
+                
+            </div> <!--列表-->
+
+        </div>
+        
+<div id="coco-store" style="display:none">
+	<div class="storebox">
+    	<h5>提示</h5>
+        <h3>已经收藏该篇文章</h3>
+        <p class="p1"><a href="/bbs/u.php?action=favor&tag=1">去我的收藏夹</a></p>
+        <p class="p2"><a href="/bbs/login.php">请登录</a></p>
+    </div>
+</div>        
+<script language="javascript" type="text/javascript" src="/cms/include/dedeajax2.js"></script>
+<script type="text/javascript">
+$(function() {
+	getDigg(5705);
+})
+function postDigg(ftype,aid)
+{
+	var taget_obj = document.getElementById('newdigg'); 
+	var saveid = GetCookie('diggid');
+	if(saveid != null)
+	{
+		var saveids = saveid.split(',');
+		var hasid = false;
+		saveid = '';
+		j = 1;
+		for(i=saveids.length-1;i>=0;i--)
+		{
+			if(saveids[i]==aid && hasid) continue;
+			else {
+				if(saveids[i]==aid && !hasid) hasid = true;
+				saveid += (saveid=='' ? saveids[i] : ','+saveids[i]);
+				j++;
+				if(j==20 && hasid) break;
+				if(j==19 && !hasid) break;
+			}
+		}
+		if(hasid) { alert("您已经顶过该帖，请不要重复顶帖 ！"); return; }
+		else saveid += ','+aid;
+		SetCookie('diggid',saveid,1);
+	}
+	else
+	{
+		SetCookie('diggid',aid,1);
+	}
+	myajax = new DedeAjax(taget_obj,false,false,'','','');
+	var url = "/cms/plus/digg_ajax.php?action="+ftype+"&id="+aid;
+	myajax.SendGet2(url);
+	DedeXHTTP = null;
+}
+function getDigg(aid)
+{
+	var taget_obj = document.getElementById('newdigg');
+	myajax = new DedeAjax(taget_obj,false,false,'','','');
+	myajax.SendGet2("/cms/plus/digg_ajax.php?id="+aid);
+	DedeXHTTP = null;
+}
+</script>        
+
+<script type="text/javascript">
+var _channels = [];
+	$(function() {
+		var _host = window.location.host;
+		var _tempi = 0;
+		$("#channelinfos a").each(function() {
+			if( _tempi > 0 ) {
+				var _tempa = [];
+				_tempa.push($(this).html()+"");
+				_tempa.push("http://"+_host+$(this).attr("href"));
+				_channels.push(_tempa);
+			}
+			_tempi++;
+		})
+	})
+		
+	window["_BFD"] = window["_BFD"] || {};
+	_BFD.BFD_INFO = {
+	
+	
+		"title":"播放系统声音&震动&系统声音对照表",   //文章标题
+	
+		"id":"5705",   //文章id
+	
+		"url":"http://www.cocoachina.com/downloads/code/2013/0222/5705.html",   //文章链接
+	
+		"category":_channels,   //文章类别
+	
+		"ptime":"1361501792",   //文章发表时间，时间戳格式
+	
+		"author":"suiling",   //文章作者
+			
+		"user_id":"0", //网站当前用户id，如果未登录就为0或空字符串
+		
+		"page_type":"detail", //当前页面全称，请勿修改
+		
+		"image_link":"http://www.cocoachina.com/cms/uploads/allimg/130222/4196-1302221059160-L.png", //标题图片地址
+		
+		"description":"来自会员sunzhe的分享： 如题 #import AudioToolbox/AudioToolbox.h #import UIKit/UIKit.h - (void)vibrate { AudioServicesPlaySystemSound(SystemSoundID); } 当参数为:kSystemSoundID_Vibrate 时就是震动; ps(只有iphone才能震动而", // 内容简介
+		
+		"vcnt":"4575" //阅读人数
+	};
+</script>
+
+</div>    
+<!--右侧浮动-->
+    <div class="r-bar">
+        <img src="/cms/templets/images/coco_weixin.png" class="weixin">
+    	<a href="http://weibo.com/cocoachina" target="_blank" title="" class="weibo">sina</a>
+        <a href="javascript:void(0);" target="_blank" title="" class="feedback">weixin</a>
+        <a href="mailto:support@cocoachina.com" title="" class="kefu">mail</a>
+        <a href="javascript:;" title="回到顶部" class="returntop">回到顶部</a>
+    </div>
+
+<script type="text/javascript">
+$(function(){
+	var type = $('#type_name').html();
+  if(type){
+  	var typename = type.toLowerCase();
+    $('#'+typename).addClass('light');	
+  }
+});
+</script>
+<!--./cont-->
+<script type="text/javascript" src="/cms/templets/js/index.js?20111546514"></script>
+<script src="http://cc.cocimg.com/cms/templets/js/jquery.colorbox-min.js" type="text/javascript"></script>
+<script language="javascript" src="/cms/bbsauth_new2015.php"  type="text/javascript"></script>
+<script src="/cms/templets/js/script.js?t=2045479411" type="text/javascript"></script>
+
+<!--footer-->
+<div class="footer clearfix">
+    <div class="footer-b">
+    	<div><a href="/aboutus/index.html" target="_blank">关于我们</a><a href="/contactus/index.html" target="_blank">广告合作</a><a target="_blank" href="mailto:support@cocoachina.com">联系我们</a></div>
+    	<p>&copy;CocoaChina 2010-2014 
+        <i> <a href="http://www.miibeian.gov.cn/" target="_blank">京ICP备 11006519号 　京ICP证 100954号</a> 京公网安备11010502020289</i></p>
+    </div>    
+</div>
+<!--./footer-->
+<script language="javascript" type="text/javascript" src="/cms/include/dedeajax2-min.js"></script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-16940817-2']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+  
+
+</script>
+
+
+</body>
+</html>
