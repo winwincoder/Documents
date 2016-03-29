@@ -1,0 +1,749 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+
+    <title>Xcode 6制作动态及静态Framework - CocoaChina_让移动开发更简单</title>
+    <meta name="keywords" content="Xcode 6,静态Framework,动态FrameworiPhone开发,iOS开发,iPad开发,Mac开发,苹果开发中文站,iPhone开发中文站,CocoaChina首页, Mac OS开发, Cocoa介绍,移动互联网,触控科技,Cocoa,Apple,developer,iOS,iPhone,iPad,iMac,iPod Touch,iPhone5,iPhone4S,iPad3,招聘,iPhone程序员,Objective-c,iPhone应用外包,ios6,ios面试,Cocos2d-x,cocos2d,iTunes,App Store,苹果开发" />
+    <meta name="description" content="CocoaChina前身是全球成立最早规模最大的苹果开发中文站，现致力为所有移动开发者提供资讯服务、问答服务、代码下载、工具库及人才招聘服务" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="baidu-tc-cerfication" content="3300a939a1098c27e94457b75a0bb8c1" />
+    <script type='text/javascript'>
+        function gotoMobilePage() {
+            var sUserAgent = navigator.userAgent.toLowerCase();
+            var agent_iphone = /iphone/i;
+            var agent_android = /android/i;
+            //var agent_ipad = /ipad/i;
+            var agent_ipod = /ipod/i;
+            var agent_wphone = /windows phone/i;
+            if(agent_iphone.test(sUserAgent) || agent_android.test(sUserAgent) || agent_ipod.test(sUserAgent) || agent_wphone.test(sUserAgent)){
+                var re = /\/\w+\/\d+\/(\d+)\.html/, 
+                    result = re.exec(window.location.pathname);
+                if ( result )
+                {
+                    window.location.href = "http://www.cocoachina.com/cms/wap.php?action=article&id=" + result[1];
+                } else {
+                    window.location.href = "http://m.cocoachina.com/";
+                }
+            }
+        }
+        gotoMobilePage(); 
+    </script>
+    <link rel="stylesheet" href="http://cdn.cocimg.com/assets/css/global.css?v=20150818" media="all">
+    <link rel="stylesheet" href="http://cdn.cocimg.com/assets/css/index.css?v=20151015" media="all">
+    <link href="http://cdn.cocimg.com/assets/css/module.css?v=20150906" rel="stylesheet">
+    <link href="http://cdn.cocimg.com/assets/css/style.css?v=20150818" rel="stylesheet">
+    <link href="http://cdn.cocimg.com/assets/css/navheader.css?v=20160301" rel="stylesheet" />
+    <script src="http://cdn.cocimg.com/assets/js/jquery.min.js?v=20150818" type="text/javascript"></script>
+    <script type="text/javascript" src="http://cdn.cocimg.com/assets/js/navbar.js?v=20151013"></script>
+    <script type='text/javascript' src='http://js.adm.cnzz.net/js/abase.js'></script>
+    <script type="text/javascript" src="http://s.csbew.com/k.js"></script>
+    
+</head>
+<body>
+
+    <div class="nav-header">
+            <div class="nav-header-top">
+                <div class="nav-logo nav-fl"><a href="/"><img src="http://cdn.cocimg.com/assets/images/logo.png?v=201510272" /></a></div>
+                <div class="nav-list nav-fl">
+                    <ul>
+                        <li><a href="/news/">资讯</a></li>
+                        <li><a href="/bbs/">论坛</a></li>
+                        <li><a target="_blank" href="http://code.cocoachina.com/" title="CODE">代码</a></li>
+                        <li><a href="http://tools.cocoachina.com" title="工具" target='_blank'>工具</a></li>
+                        <li><a target="_blank" href="http://job.cocoachina.com/" title="JOB">招聘</a></li>
+                        <li><a target="_blank" href="http://cvp.cocos.com/" title="CVP">CVP</a></li>
+                        <li><a target="_blank" href="http://waikuai.cocoachina.com/" title="waikuai">外快</a></li>
+                        <li><a target="_blank" href="http://blog.cocoachina.com/" title="blog">博客</a><span class="new-item-flag">new</span></li>
+                    </ul>
+                </div>
+                <div class="nav-search nav-fl">
+                    <div class="nav-search-flag" style="display:block"><img src="http://cdn.cocimg.com/assets/img/search-icon.png?v=20150825" /></div>
+                    <div class="nav-search-form" style="display:none">
+                        <form action="/cms/plus/search.php" name="formsearch" method="post" target="_blank">
+                            <input type="hidden" name="kwtype" value="0" />
+                            <input type="hidden" name="searchtype" value="titlekeyword" />
+                            <input name="keyword" type="text" placeholder="站内搜索" />
+                            <input type="button" />
+                        </form>
+                    </div>
+                </div>
+                <div class="nav-user nav-fr">
+                    <!-- #region 未登录时显示此区域 -->
+                    <div class="nav-user-login" style="display:block">
+                        <a href="/bbs/login.php">登录</a>|
+                        <a href="/bbs/register.php">注册</a>
+                    </div>
+                    <!-- #endregion -->
+                    <!-- #region 已登录时显示此区域 -->
+                    <div class="nav-user-name" style="display:none">
+                        <div><alert></alert><img src="/assets/img/user.png" />Guest</div>
+                        <ul>
+                            <li><a href="#"><img src="/assets/img/i-man.png" />我的主页</a></li>
+                            <li><alert></alert><a href="#"><img src="/assets/img/i-mail.png" />我的消息</a></li>
+                            <li><a href="#"><img src="/assets/img/i-setting.png" />账户设置</a></li>
+                            <li><a href="index-offline.html"><img src="/assets/img/i-logout.png" />退出</a></li>
+                        </ul>
+                    </div>
+                    <!-- #endregion -->
+                </div>
+                <div class="nav-clear"></div>
+            </div>
+        <div class="nav-header-bottom">
+            <ul>
+                <li><a id="ios" href="/ios/" title="ios">iOS开发</a></li>
+                <li><a id="swift" href="/swift/" title="swift">Swift</a></li>
+                <li><a id="app_store" href="/appstore/" title="appstore">App Store研究</a></li>
+                <li><a id="design" href="/design/" title="design">产品设计</a></li>
+                <li><a id="review" href="/review/" title="review">应用</a></li>
+                <li><a id="review" href="/vr/" title="review">VR</a></li>
+                <li><a id="game" href="/game/" title="game">游戏开发</a></li>
+                <li><a id="apple" href="/apple/" title="apple">苹果相关</a></li>
+                <!-- <li><a id="cocos" href="/cocos/" title="cocos">Cocos引擎</a></li>-->
+                <!--<li><a id="webapp" href="/webapp/" title="HTML5">HTML5</a></li>-->
+                <li><a id="android" href="/android/" title="android">安卓相关</a></li>
+                <li><a id="market" href="/market/" title="market">营销推广</a></li>
+                <li><a id="industry" href="/industry/" title="industry">业界动态</a></li>
+                <li><a id="programmer" href="/programmer/" title="programmer">程序人生</a></li>
+            </ul>
+        </div>
+    </div>
+<script language="javascript">
+    function IsPC() {
+        var userAgentInfo = navigator.userAgent;
+        var Agents = new Array("Android", "iPhone", "SymbianOS", "Windows Phone", "iPod");
+        var flag = true;
+        for (var v = 0; v < Agents.length; v++) {
+        if (userAgentInfo.indexOf(Agents[v]) > 0) { flag = false; break; }
+        }
+        return flag;
+    }
+    if (!IsPC()){
+           window.location.href = "http://www.cocoachina.com/cms/wap.php?action=article&id=10322";
+    }
+
+</script>
+<!--middle-->
+<div class="middle clearfix">
+    <div class="m-wrap">
+        <div class="m-ad2" style="margin-top:12px;">
+            <div class="ad2-l">
+                <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                <!-- CC首页底部左侧72890 -->
+                <ins class="adsbygoogle"
+                     style="display:inline-block;width:728px;height:90px"
+                     data-ad-client="ca-pub-1180518835303646"
+                     data-ad-slot="8012423965"></ins>
+                <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+            <div class="ad2-r">
+                <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                <!-- CC资讯页25090 -->
+                <ins class="adsbygoogle"
+                     style="display:inline-block;width:250px;height:90px"
+                     data-ad-client="ca-pub-1180518835303646"
+                     data-ad-slot="9489157162"></ins>
+                <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+        </div>
+        <!--left-->
+        <div class="detail-left float-l">
+            <p class="crumbs"><a href="/" title="首页">首页</a> &gt;</span><a href="/ios" title="iOS开发"><span id="type_name">iOS开发</span></a></p>
+            <div class="detail-main">
+                <h2>Xcode 6制作动态及静态Framework</h2>
+                <div class="p-ico clearfix">
+                    <div>
+                        <span class="ml0">2014-11-26 10:21</span>
+                        <span>编辑：
+                        <a href="" id="field_author" target="_blank">suiling</a></span>
+                        <span>分类：<a href="/ios/" target="_blank">iOS开发</a></span>
+                        <span id="source">来源：<a href="http://years.im/Home/Article/detail/id/52.html" target="_blank">Years.IM</a></span>
+
+                        <div class="float-r">
+                            <span id="artical_comment_cnt"><i></i></span>
+                            <span><i class="view"></i><script src="/cms/plus/count.php?view=yes&aid=10322&mid=17" language="javascript"></script></span>
+                    </div>
+                    </div>
+                </div>
+                <div class="p-ico clearfix">
+                    <p class="related float-l"><a href="/cms/tags.php?/Xcode+6/" target="_blank">Xcode 6</a><a href="/cms/tags.php?/%E9%9D%99%E6%80%81Framework/" target="_blank">静态Framework</a><a href="/cms/tags.php?/%E5%8A%A8%E6%80%81Framewor/" target="_blank">动态Framewor</a></p>
+                    <input type="hidden" id="article_id"  value="10322"/>
+                </div>
+                <div class="adsbox clearfix">
+                    <div class="float-l">
+                        <div class="float-l"><b>招聘信息：</b></div>
+                        <ul class="float-l" id="invitelist" style="margin-top: 0px;">
+                            <li><a href='http://job.cocoachina.com/job/show?id=67120' target='_blank'>iOS 开发工程师</a></li><li><a href='http://job.cocoachina.com/job/show?id=67767' target='_blank'>iOS高级工程师</a></li><li><a href='http://job.cocoachina.com/job/show?id=67498' target='_blank'>java高级软件工程师</a></li><li><a href='http://job.cocoachina.com/job/show?id=67499' target='_blank'>iOS软件工程师</a></li><li><a href='http://job.cocoachina.com/job/show?id=67500' target='_blank'>Web后端高级开发工程师</a></li><li><a href='http://job.cocoachina.com/job/show?id=65827' target='_blank'>Mac开发工程师</a></li><li><a href='http://job.cocoachina.com/job/show?id=67762' target='_blank'>iOS技术专家</a></li><li><a href='http://job.cocoachina.com/job/show?id=67573' target='_blank'>高级PHP开发工程师</a></li><li><a href='http://job.cocoachina.com/job/show?id=67755' target='_blank'>iOS 研发工程师</a></li><li><a href='http://job.cocoachina.com/job/show?id=67159' target='_blank'>资深iOS开发工程师</a></li><li><a href='http://job.cocoachina.com/job/show?id=67747' target='_blank'>iOS开发工程师</a></li>
+                            <!--<script src="http://www.cocoachina.com/bbs/new.php?action=article&fidin=26&digest=0&postdate=0&author=0&fname=0&hits=0&replies=0&pre=1&num=3&length=120&order=2" charset="gbk"></script>-->
+                        </ul>
+                    </div>
+                    <div class="float-r">
+                        <a href="javascript:void(0)" class="prev"></a>
+                        <a href="javascript:void(0)" class="next"></a>
+                    </div>
+                </div>
+                <div id="detailbody" class="field_body">
+                    <p>有没有写SDK或者要将一些常用的工具类做成Framework的经历? 你或许自己写脚本完成了这项工作，相信也有很多的人使用 iOS-Universal-Framework ，随着Xcode 6的发布，相信小伙伴们已经都知道了，Xcode 6支持做Framework了. 同时iOS-Universal-Framework开发者也宣布不在继续维持此项目的开发，建议开发者使用Xcode 6制作，目前网上也有很多制作iOS Framework的资料，但大多都不够详细，接下来本文会详情介绍一下在Xcode 6下制作iOS Framework.</p><p>关于静态库和动态库的概念，网上资料很多，这里不做叙述，只讲解制作过程。</p><p><strong>创建iOS动态库</strong></p><p>新建工程并选择默认Target为Cocoa Touch Framework, 如图:</p><p style="text-align: center;"><img src="http://cc.cocimg.com/api/uploads/20141126/1416968618592047.png" title="1416968618592047.png" alt="11.png" style="width: 537px; height: 322px;"/></p><p>做编码工作，在这里我简单的写了一个Utils的类，并写了一个log方法</p><p style="text-align: center;"><img src="http://cc.cocimg.com/api/uploads/20141126/1416968640210748.png" title="1416968640210748.png" alt="12.png" style="width: 536px; height: 269px;"/></p><p><span style="line-height: 1.8;">设置开放的头文件:Framework中有些类可能是一些私有的辅助工具，不需要使用者看到，在这里只需要把开放出去的类放到Public下, 如图</span><br/></p><p style="text-align: center;"><img src="http://cc.cocimg.com/api/uploads/20141126/1416968683381248.png" title="1416968683381248.png" alt="13.png"/></p><p><span style="line-height: 1.8;">这样生成的Framework的Headers目录下也只能看到Public的头文件</span><br/></p><p style="text-align: center;"><img src="http://cc.cocimg.com/api/uploads/20141126/1416968745487455.png" title="1416968745487455.png" alt="14.png"/></p><p><span style="line-height: 1.8;">编码完成之后，直接Run就能成功生成Framework文件了，选择 xCode->Window->Organizer->Projects->Your Project, 打开工程的Derived Data目录，这样就能找到生成的Framework文件了，如图</span><br/></p><p style="text-align: center;"><img src="http://cc.cocimg.com/api/uploads/20141126/1416968769416024.png" title="1416968769416024.png" alt="15.png"/></p><p style="text-align: center;"><img src="http://cc.cocimg.com/api/uploads/20141126/1416968807939410.png" title="1416968807939410.png" alt="16.png"/></p><p><strong>新建测试工程，使用生成的Framework</strong></p><p>将Framework文件导入到测试工程，调用Framework中的代码</p><pre class="brush:js;toolbar:false">MyUtils&nbsp;*utils&nbsp;=&nbsp;[MyUtils&nbsp;new];&nbsp;
+[utils&nbsp;log:@"didFinishLaunchingWithOptions"];</pre><p>运行报错(Reason: Image Not Found)</p><p style="text-align: center;"><img src="http://cc.cocimg.com/api/uploads/20141126/1416968933140855.png" title="1416968933140855.png" alt="18.png"/></p><p>为什么会这样的？因为我们做的是动态库，在使用的时候需要额外加一个步骤,要把Framework同时添加到‘Embedded Binaries’中</p><p style="text-align: center;"><img src="http://cc.cocimg.com/api/uploads/20141126/1416968942653344.png" title="1416968942653344.png" alt="19.png"/></p><p>注意: 在<span style="font-size: 14px; line-height: 25.200000762939453px;">XCode&nbsp;</span>6之前是没有这个选项的(我没发现)，所以理论上XCode 5及之前的版本无法使用<span style="font-size: 14px; line-height: 25.200000762939453px;">Xcode </span>6下生成的Framework动态库。</p><p>到这里，假定你整个过程都是使用的模拟器做的，那看上去会很顺利。这时候尝试将测试工程部署到真机上，问题来了</p><p><span style="color: rgb(227, 108, 9);">ld: warning: ignoring file /work/ios/MyFrameworkTest/MyFrameworkTest/MyFramework.framework/MyFramework, file was built for x86_64 which is not the architecture being linked (armv7): /work/ios/MyFrameworkTest/MyFrameworkTest/MyFramework.framework/MyFramework</span></p><p><span style="color: rgb(227, 108, 9);">Undefined symbols for architecture armv7:</span></p><p><span style="color: rgb(227, 108, 9);">&nbsp; "_OBJC_CLASS_$_MyUtils", referenced from:</span></p><p><span style="color: rgb(227, 108, 9);">&nbsp; &nbsp; &nbsp; objc-class-ref in AppDelegate.o</span></p><p><span style="color: rgb(227, 108, 9);">ld: symbol(s) not found for architecture armv7</span></p><p><span style="color: rgb(227, 108, 9);">clang: error: linker command failed with exit code 1 (use -v to see invocation)</span></p><p>为什么会这样？错误提示已经很明显了，因为我们制作动态库的时候，选的设备是模拟器，如果选真机的话，那生成的库也只能在真机上使用，那我们该怎样制作一个通用的动态库呢? 简单的方法是分别生成模拟器和真机上运行的库，然后在合并，这个方法，在每次生成动态库的时候，过程都会很繁琐，下面我们用一个脚本来自动完成它。</p><p><strong>制作通用动态库</strong></p><p>新建Aggregate Target</p><p style="text-align: center;"><img src="http://cc.cocimg.com/api/uploads/20141126/1416969049491645.png" title="1416969049491645.png" alt="20.png"/></p><p><span style="line-height: 1.8;">添加script到新建的Target</span></p><p style="text-align: center;"><img src="http://cc.cocimg.com/api/uploads/20141126/1416969056242621.png" title="1416969056242621.png" alt="21.png"/></p><p><br/></p><pre class="brush:js;toolbar:false">#&nbsp;Sets&nbsp;the&nbsp;target&nbsp;folders&nbsp;and&nbsp;the&nbsp;final&nbsp;framework&nbsp;product.
+#&nbsp;如果工程名称和Framework的Target名称不一样的话，要自定义FMKNAME
+#&nbsp;例如:&nbsp;FMK_NAME&nbsp;=&nbsp;"MyFramework"
+FMK_NAME=${PROJECT_NAME}
+#&nbsp;Install&nbsp;dir&nbsp;will&nbsp;be&nbsp;the&nbsp;final&nbsp;output&nbsp;to&nbsp;the&nbsp;framework.
+#&nbsp;The&nbsp;following&nbsp;line&nbsp;create&nbsp;it&nbsp;in&nbsp;the&nbsp;root&nbsp;folder&nbsp;of&nbsp;the&nbsp;current&nbsp;project.
+INSTALL_DIR=${SRCROOT}/Products/${FMK_NAME}.framework
+#&nbsp;Working&nbsp;dir&nbsp;will&nbsp;be&nbsp;deleted&nbsp;after&nbsp;the&nbsp;framework&nbsp;creation.
+WRK_DIR=build
+DEVICE_DIR=${WRK_DIR}/Release-iphoneos/${FMK_NAME}.framework
+SIMULATOR_DIR=${WRK_DIR}/Release-iphonesimulator/${FMK_NAME}.framework
+#&nbsp;-configuration&nbsp;${CONFIGURATION}
+#&nbsp;Clean&nbsp;and&nbsp;Building&nbsp;both&nbsp;architectures.
+xcodebuild&nbsp;-configuration&nbsp;"Release"&nbsp;-target&nbsp;"${FMK_NAME}"&nbsp;-sdk&nbsp;iphoneos&nbsp;clean&nbsp;build
+xcodebuild&nbsp;-configuration&nbsp;"Release"&nbsp;-target&nbsp;"${FMK_NAME}"&nbsp;-sdk&nbsp;iphonesimulator&nbsp;clean&nbsp;build
+#&nbsp;Cleaning&nbsp;the&nbsp;oldest.
+if&nbsp;[&nbsp;-d&nbsp;"${INSTALL_DIR}"&nbsp;]
+then
+rm&nbsp;-rf&nbsp;"${INSTALL_DIR}"
+fi
+mkdir&nbsp;-p&nbsp;"${INSTALL_DIR}"
+cp&nbsp;-R&nbsp;"${DEVICE_DIR}/"&nbsp;"${INSTALL_DIR}/"
+#&nbsp;Uses&nbsp;the&nbsp;Lipo&nbsp;Tool&nbsp;to&nbsp;merge&nbsp;both&nbsp;binary&nbsp;files&nbsp;(i386&nbsp;+&nbsp;armv6/armv7)&nbsp;into&nbsp;one&nbsp;Universal&nbsp;final&nbsp;product.
+lipo&nbsp;-create&nbsp;"${DEVICE_DIR}/${FMK_NAME}"&nbsp;"${SIMULATOR_DIR}/${FMK_NAME}"&nbsp;-output&nbsp;"${INSTALL_DIR}/${FMK_NAME}"
+rm&nbsp;-r&nbsp;"${WRK_DIR}"
+open&nbsp;"${INSTALL_DIR}"</pre><p>选中新建的Target，Run, 如果没有异常的话，会自动弹出生成的Framework文件</p><p style="text-align: center;"><img src="http://cc.cocimg.com/api/uploads/20141126/1416969099280206.png" title="1416969099280206.png" alt="22.png"/></p><p><span style="line-height: 1.8;">这样生成的动态库就能同时支持模拟器和真机了。</span></p><p><strong>Xcode 6下制作通用静态库</strong></p><p>上面我们也提到了，这样生成的动态库恐怕很难在Xcode 5上使用，那我们为什么非要用动态库呢，一般情况下不是用静态库就好了吗？ So Easy!只需要修改一个参数即可生成静态库了。</p><p style="text-align: center;"><img src="http://cc.cocimg.com/api/uploads/20141126/1416969263540257.png" title="1416969263540257.png" alt="23.png"/></p><p>使用静态库的话，就可以把Framework从‘Embedded Binaries’中删除了. 亲测在<span style="font-size: 14px; line-height: 25.200000762939453px;">Xcode </span>5下可用。把新生成的库导入到测试工程，试试在模拟器和真机上运行，一切OK.</p><p>不巧，如果你用的真机是iPhone5 C, 那悲剧又要发成了，生成的Framework竟然不支持armv7s,不知是<span style="font-size: 14px; line-height: 25.200000762939453px;">Xcode&nbsp;</span>6的bug，还是因为苹果认为使用armv7s的设备太少，可以不支持了.<span style="font-size: 14px; line-height: 25.200000762939453px;">Xcode&nbsp;</span>新建工程，默认的Architectures竟然不包含armv7s.</p><p style="text-align: center;"><img src="http://cc.cocimg.com/api/uploads/20141126/1416969601208949.png" title="1416969601208949.png" alt="24.png"/></p><p>想要生成的库支持armv7s,把armv7s添加到Architectures中，重新生成Framework即可</p><p style="text-align: center;"><img src="http://cc.cocimg.com/api/uploads/20141126/1416969609873143.png" title="1416969609873143.png" alt="25.png"/></p><p><strong>判断一个Framework支持哪些架构</strong></p><p>我们该怎么验证生成的Framework支持哪些平台呢，总不能一个个测试吧？当然不用.下面的命令是加上armv7s前后生成的framework的对比</p><pre class="brush:js;toolbar:false">Yearsdembp:Products&nbsp;Years$&nbsp;lipo&nbsp;-info&nbsp;./MyFramework.framework/MyFramework&nbsp;
+Architectures&nbsp;in&nbsp;the&nbsp;fat&nbsp;file:&nbsp;./MyFramework.framework/MyFramework&nbsp;are:&nbsp;i386&nbsp;x86_64&nbsp;armv7&nbsp;arm64&nbsp;
+Yearsdembp:Products&nbsp;Years$&nbsp;lipo&nbsp;-info&nbsp;./MyFramework.framework/MyFramework&nbsp;
+Architectures&nbsp;in&nbsp;the&nbsp;fat&nbsp;file:&nbsp;./MyFramework.framework/MyFramework&nbsp;are:&nbsp;armv7&nbsp;armv7s&nbsp;i386&nbsp;x86_64&nbsp;arm64</pre>
+                </div>
+                <div id="page" style="padding:0"></div>
+
+                <div class="wx_article">
+                    <div class="article_weixin">
+                        <img src="http://cdn.cocimg.com/cms/templets/images/article_weixin.jpg" width="131" height="131" alt="搜索CocoaChina微信公众号：CocoaChina"/>
+                        <div class="article_scan">微信扫一扫</div>
+                        <div class="article_txt" ><span style="color:#999999">订阅每日移动开发及APP推广热点资讯<br/>公众号：</span>CocoaChina</div>
+                    </div>
+                </div>
+
+               <div class="clearfix tgbox">
+                    <a href="http://www.cocoachina.com/deliver.php" class="tg float-l" target="_blank">我要投稿</a>&nbsp;&nbsp;
+                    <a style="margin-left:10px"  href="javascript:void(0)" onClick="add_favors(10322,'Xcode 6制作动态及静态Framework')" class="tg float-l" >收藏文章</a>
+                    <div class="share float-r">分享到：
+                        <div class="bdsharebuttonbox" id="sharediv"><a href="#" class="bds_more" data-cmd="more"></a> <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a> <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a></div>
+                    </div>
+                </div>
+
+
+                <a class="zanbox" href="javascript:void(0)" id="zanbox" onClick="postDigg('good',10322)" title="哎呦，不错噢，赞一个" >
+                    <strong id="newdigg">
+                     <script src="/cms/plus/count.php?view=yes&digg_id=10322&mid=17" language="javascript"></script>
+                    </strong>
+                </a>
+            </div>
+
+            <div class="article-prev">上一篇：<a href='/ios/20141126/10320.html'>在iOS 8中使用UIAlertController</a> </div>
+            <div class="article-next">下一篇：<a href='/ios/20141127/10330.html'>objc.io#18#游戏专题之Scene Kit</a> </div>
+
+            <!--相关资讯-->
+            <div class="part-wrap clearfix">
+                <h3>相关资讯</h3>
+                <ul class="info-list clearfix">
+                    <li>
+                        <a href="/ios/20150603/11989.html" target="_blank" title="最近在用Xcode 6.3写代码，一些涉及到对象的代码会报如下编译器警告：Pointer is missing a nullability type specifier (__nonnull or __nullable)，于是google了一下，发现这是Xcode 6.3的一个新特性，即nullability annotations">会报编译器警告的Xcode 6.3新特性：Nullability Annotations</a>
+                     </li>
+<li>
+                        <a href="/ios/20150521/11886.html" target="_blank" title="毫无疑问，Xcode有一系列强大的功能, 对于一些新开发者或者首次使用者可能会看着很困惑。显然，事实就是并非每个人都会用到所有的选项。例如，如果你不使用版本控制，你将可能永远都不会使用相">【干货】Xcode 6 技巧: 矢量图像，代码片段以及其他</a>
+                     </li>
+<li>
+                        <a href="/ios/20150506/11765.html" target="_blank" title="Xcode提供了所有你创建一个App需要的功能。但是由于其不开源以及没有制作Xcode-Plugin相关的文档，在我们需要添加一些自己的想法和功能的时候变得缺乏灵活性。 但是我们可以通过一些非官方的手段来">Xcode 6 插件开发入门：添加自己的想法和功能</a>
+                     </li>
+<li>
+                        <a href="/ios/20150423/11658.html" target="_blank" title="开发者会经常遇到视图或者Auto Layout约束中存在bug的情况，并且这种bug很难通过代码发现，所以开发者很有必要熟知如何进行简单高效的视图调试，而Xcode 6的发布使得视图调试变得前所未有的简单。">详解Xcode 6的视图调试</a>
+                     </li>
+<li>
+                        <a href="/ios/20150304/11224.html" target="_blank" title="KSHObjcUML是一个Objective-C类引用关系图的Xcode插件。 ">源码推荐（3.4）：仿新浪动感图片浏览器，ObjC类引用关系图的Xcode插件</a>
+                     </li>
+<li>
+                        <a href="/ios/20150114/10911.html" target="_blank" title="当你希望应用程序无缝支持不同的语言和地区时，应用程序的国际化和本地化就显得十分必要了。国际化是指为应用程序提供一个用来支持不同语言的框架的过程。而本地化则是使你的应用程序支持特">Xcode 6和swift中应用程序的国际化和本地化</a>
+                     </li>
+<li>
+                        <a href="/ios/20141224/10748.html" target="_blank" title="苹果在Xcode 6中做了不少明显的改善和优化，视图调试就是其中之一。通常，App用户界面的行为不会符合开发者期望的那样，比如或者不展示视图，或者没有正确地展示。本文讲解如何使用Xcode的新的视">Xcode 6视图调试小贴士</a>
+                     </li>
+<li>
+                        <a href="/ios/20141218/10681.html" target="_blank" title="苹果升级到iOS 8和Xcode 6后，之前的一些设置会出现一些莫名其妙的错误，这里总结了iOS 8和Xcode 6的各种坑，包括项目路径坑、NSUserDefaults坑、UITableView坑、autolayout坑、键盘弹不出、detailTextLabel无法显示">总结iOS 8和Xcode 6的各种坑</a>
+                     </li>
+<li>
+                        <a href="/ios/20141212/10626.html" target="_blank" title="该系列文章翻译自苹果的Xcode Overview?文档，对大部分开发者来说，已经非常熟悉Xcode的功能和特性，不过伴随着iOS 8 SDK的发布，Xcode 6中也有些许调整，所以对该文档进行了翻译和整理，感谢参与本次翻">Xcode概览（Xcode 6版）：循序渐进认识Xcode</a>
+                     </li>
+<li>
+                        <a href="/ios/20141212/10625.html" target="_blank" title="该指南通过一系列文章向您介绍了Xcode的功能和特性。为了帮您成为专业级的Xcode用户，苹果在Xcode内提供了额外的文档。您可以在线阅读iOS Developer Library 和Mac Developer Library中完全相同的文档">Xcode概览：了解关于Xcode的更多内容</a>
+                     </li>
+
+                </ul>
+            </div>
+            <div class="clearfix" style="margin-top:20px;" >
+                <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                <!-- CC评论框 -->
+                <ins class="adsbygoogle"
+                     style="display:inline-block;width:750px;height:90px"
+                     data-ad-client="ca-pub-1180518835303646"
+                     data-ad-slot="8242010366"></ins>
+                <script>
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+            <!-- 评论模块start -->
+            
+            <div class="clearfix" id="commnet_list_holder" style="margin-bottom:50px;">
+                <div class="glab-comment-form">
+                    <div class="dcbt">我来说两句</div>
+                    <div class="user-head">
+                        <img id="user_face_url" src="http://cdn.cocimg.com/bbs/images/face/none.gif" height="43" width="43" alt="">
+                    </div>
+                    <div class="form-region">
+                        <textarea name="comment" id="main_comment_content" cols="30" rows="10" placeholder="你怎么看？快来评论一下吧！"></textarea>
+                        <a class="submitform" id="main_comment_bt">发表评论</a>
+                        <div class="unlogin-mask">
+                            <div>您还没有登录！请<a href="/bbs/login.php">登录</a>或<a href="/bbs/register.php">注册</a></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="glab-comment-callback-msg" class="glab-comment-info"></div>
+                <div class="glab-comment-title">所有评论（<span>0</span>）</div>
+                <div class="glab-commentlist" id="commentlist">
+                    <a id="refresh_comment_btn" href="javascript:;" onclick="$('#morecomment').trigger('click')">刷新评论</a>
+                </div>
+                <div class="glab-comment-more" id="morecomment" style="display:none">
+                    更多评论
+                </div>
+            </div>
+            
+            <!-- 评论模块end -->
+
+
+        </div>
+        <!--./left-->
+        <!--侧边栏-->
+        <div class="clearfix newslist">
+            <div class="rightSide detail-right float-r"  >
+                <!--两周热门资讯推荐-->
+                <div>
+                    <div class="part-wrap clearfix">
+                        <h3>热门资讯</h3>
+                        <ul class="related-hot">
+                            <li class="clearfix"><a href="http://www.cocoachina.com/ios/20160225/15415.html" class="float-l pic" target="_blank" title="Storyboard的爱与恨"><img src="http://cc.cocimg.com/api/uploads/160224/6bce59ff4838f9acde6b332652592640.jpg"  style="max-height:60px" alt="Storyboard的爱与恨"/></a><div style="margin-left:86px"><p class="related-intro"><a href="http://www.cocoachina.com/ios/20160225/15415.html" target="_blank" title="Storyboard的爱与恨">Storyboard的爱与恨</a></p><p class="hits">点击量<span>11009</span></p></div></li><li class="clearfix"><a href="http://www.cocoachina.com/ios/20160301/15486.html" class="float-l pic" target="_blank" title="iOS 高效添加圆角效果实战讲解"><img src="http://cc.cocimg.com/api/uploads/160301/a4d233bf947170d6b3b33967767f4afe.jpg"  style="max-height:60px" alt="iOS 高效添加圆角效果实战讲解"/></a><div style="margin-left:86px"><p class="related-intro"><a href="http://www.cocoachina.com/ios/20160301/15486.html" target="_blank" title="iOS 高效添加圆角效果实战讲解">iOS 高效添加圆角效果实战讲解</a></p><p class="hits">点击量<span>10871</span></p></div></li><li class="clearfix"><a href="http://www.cocoachina.com/ios/20160302/15494.html" class="float-l pic" target="_blank" title="Runtime那些事儿（消息机制）"><img src="http://cc.cocimg.com/api/uploads/160301/af238923eacafdc379bed2a2ab7eb193.jpg"  style="max-height:60px" alt="Runtime那些事儿（消息机制）"/></a><div style="margin-left:86px"><p class="related-intro"><a href="http://www.cocoachina.com/ios/20160302/15494.html" target="_blank" title="Runtime那些事儿（消息机制）">Runtime那些事儿（消息机制）</a></p><p class="hits">点击量<span>10539</span></p></div></li><li class="clearfix"><a href="http://www.cocoachina.com/ios/20160224/15407.html" class="float-l pic" target="_blank" title="iOS下的实际网络连接状态检测"><img src="http://cc.cocimg.com/api/uploads/160223/eea3d64c508bacd409db5f2ab9dc6599.jpg"  style="max-height:60px" alt="iOS下的实际网络连接状态检测"/></a><div style="margin-left:86px"><p class="related-intro"><a href="http://www.cocoachina.com/ios/20160224/15407.html" target="_blank" title="iOS下的实际网络连接状态检测">iOS下的实际网络连接状态检测</a></p><p class="hits">点击量<span>9705</span></p></div></li><li class="clearfix"><a href="http://www.cocoachina.com/ios/20160304/15558.html" class="float-l pic" target="_blank" title="每个Xcode开发者应该知道的七个使用技巧"><img src="http://cc.cocimg.com/api/uploads/160303/68bb01bd231037d36661ace4b412b1e7.jpg"  style="max-height:60px" alt="每个Xcode开发者应该知道的七个使用技巧"/></a><div style="margin-left:86px"><p class="related-intro"><a href="http://www.cocoachina.com/ios/20160304/15558.html" target="_blank" title="每个Xcode开发者应该知道的七个使用技巧">每个Xcode开发者应该知道的七个使用技巧</a></p><p class="hits">点击量<span>8479</span></p></div></li><li class="clearfix"><a href="http://www.cocoachina.com/ios/20160223/15347.html" class="float-l pic" target="_blank" title="深入浅出--iOS的TCP/IP协议族剖析&&Socket"><img src="http://cc.cocimg.com/api/uploads/160218/4d78c3463eb9a89e6e4920f446f9af22.jpg"  style="max-height:60px" alt="深入浅出--iOS的TCP/IP协议族剖析&&Socket"/></a><div style="margin-left:86px"><p class="related-intro"><a href="http://www.cocoachina.com/ios/20160223/15347.html" target="_blank" title="深入浅出--iOS的TCP/IP协议族剖析&&Socket">深入浅出--iOS的TCP/IP协议族剖析&&Socket</a></p><p class="hits">点击量<span>7593</span></p></div></li><li class="clearfix"><a href="http://www.cocoachina.com/ios/20160229/14251.html" class="float-l pic" target="_blank" title="iOS开发中如何合理地制造BUG"><img src="http://cc.cocimg.com/cms/templets/images/home_images/add1.jpg"  style="max-height:60px" alt="iOS开发中如何合理地制造BUG"/></a><div style="margin-left:86px"><p class="related-intro"><a href="http://www.cocoachina.com/ios/20160229/14251.html" target="_blank" title="iOS开发中如何合理地制造BUG">iOS开发中如何合理地制造BUG</a></p><p class="hits">点击量<span>7392</span></p></div></li><li class="clearfix"><a href="http://www.cocoachina.com/ios/20160226/15324.html" class="float-l pic" target="_blank" title="EXC_BAD_ACCESS的本质详解以及僵尸模式调试原理"><img src="http://cc.cocimg.com/api/uploads/160225/3ea13b2888864860fa13fad8357a8b99.jpg"  style="max-height:60px" alt="EXC_BAD_ACCESS的本质详解以及僵尸模式调试原理"/></a><div style="margin-left:86px"><p class="related-intro"><a href="http://www.cocoachina.com/ios/20160226/15324.html" target="_blank" title="EXC_BAD_ACCESS的本质详解以及僵尸模式调试原理">EXC_BAD_ACCESS的本质详解以及僵尸模式调试原理</a></p><p class="hits">点击量<span>7380</span></p></div></li><li class="clearfix"><a href="http://www.cocoachina.com/ios/20160222/15333.html" class="float-l pic" target="_blank" title="iOS/OS X 内存管理(二)：借助工具解决内存问题"><img src="http://cc.cocimg.com/api/uploads/160217/1cb0decd422f54a1c68f2d7b460bcc0f.jpg"  style="max-height:60px" alt="iOS/OS X 内存管理(二)：借助工具解决内存问题"/></a><div style="margin-left:86px"><p class="related-intro"><a href="http://www.cocoachina.com/ios/20160222/15333.html" target="_blank" title="iOS/OS X 内存管理(二)：借助工具解决内存问题">iOS/OS X 内存管理(二)：借助工具解决内存问题</a></p><p class="hits">点击量<span>6365</span></p></div></li><li class="clearfix noborder-b"><a href="http://www.cocoachina.com/ios/20160224/15369.html" class="float-l pic" target="_blank" title="iOS开发：WebKit、Safari以及SafariViewController"><img src="http://cc.cocimg.com/api/uploads/160219/4960a382ca70bb10a7c226e38c9f3e84.jpg"  style="max-height:60px" alt="iOS开发：WebKit、Safari以及SafariViewController"/></a><div style="margin-left:86px"><p class="related-intro"><a href="http://www.cocoachina.com/ios/20160224/15369.html" target="_blank" title="iOS开发：WebKit、Safari以及SafariViewController">iOS开发：WebKit、Safari以及SafariViewController</a></p><p class="hits">点击量<span>5291</span></p></div></li>
+                        </ul>
+                    </div>
+               </div>
+               <!--./两周热门资讯推荐-->
+               <!--综合评论-->
+                <div class="part-wrap clearfix" style="margin-top: 15px;">
+                    <h3>综合评论</h3>
+                    <ul class="related-comment clearfix" id="all_comments_holder">
+                        <li><span class="hide_comment">这是伪导航栏?</span><br/><p><span>panda徐天宇</span><span>评论了</span><a href="http://www.cocoachina.com/ios/20160307/15586.html" title="动画篇-layout动画初体验" target="_blank" ><span>动画篇-layout动画初体验</span></a></p></li><li><span class="hide_comment">还让不让人买了？我就想问问我一年换一个安卓，多少年能换够一个iPhone？</span><br/><p><span>我是一只小青龙</span><span>评论了</span><a href="http://www.cocoachina.com/apple/20160304/15563.html" title="凯基证券郭明錤：苹果今年将推3款iPhone 7" target="_blank" ><span>凯基证券郭明錤：苹果今年将推3款iPhone 7</span></a></p></li><li><span class="hide_comment">https://github.com/gitKun/DRCornerViewExtension<br><br>想了一下&nbsp;我也写了一个&nbsp;demo&nbsp;和类别来实现&nbsp;圆角&nbsp;有兴趣的可以进来看下&nbsp;obj-c&nbsp;写的&nbsp;可以自己改写成swift</span><br/><p><span>CocoaKun</span><span>评论了</span><a href="http://www.cocoachina.com/ios/20160301/15486.html" title="iOS 高效添加圆角效果实战讲解" target="_blank" ><span>iOS 高效添加圆角效果实战讲解</span></a></p></li><li><span class="hide_comment">mark</span><br/><p><span>李鹏飞cocoa</span><span>评论了</span><a href="http://www.cocoachina.com/ios/20160301/15486.html" title="iOS 高效添加圆角效果实战讲解" target="_blank" ><span>iOS 高效添加圆角效果实战讲解</span></a></p></li><li><span class="hide_comment">1.HZExtend:应用快速开发架构集合了MVC和MVVM的特点https://github.com/GeniusBrother/HZExtend&nbsp;:&nbsp;1.减少控制器压力以及耦合&nbsp;2.带有请求状态(请求中，请求后，无网络)的网络框架&nbsp;3.无网仍有数据的缓存体系&nbsp;4.与表映射能操作数据库的Model&nbsp;5.支持URL跳转<br><br>2.HZURLManager:根据URL进行页面跳转:https://github.com/GeniusBrother/HZURLManager<br><br>3.HZMenuView:仿今日头条的侧边栏,以UINavigationController为容器,且导航页面时不关闭的侧边栏:https://github.com/GeniusBrother/HZMenuView<br><br>4.swift2.2后较为成熟,可以正式学起来了,以后会逐渐取代OC&nbsp;swift正式版进击群:422175469&nbsp;内有swift大牛和大量的基础学习资源</span><br/><p><span>框架终结者</span><span>评论了</span><a href="http://www.cocoachina.com/ios/20160307/15586.html" title="动画篇-layout动画初体验" target="_blank" ><span>动画篇-layout动画初体验</span></a></p></li><li><span class="hide_comment">mark&nbsp;说的很好&nbsp;谢谢.</span><br/><p><span>gufy</span><span>评论了</span><a href="http://www.cocoachina.com/ios/20150225/11190.html?utm_source&amp;#61;open-open" title="Xcode 的正确打开方式——Debugging" target="_blank" ><span>Xcode 的正确打开方式——Debugging</span></a></p></li><li><span class="hide_comment">楼主说的“Apple在这块的优化水平直接决定了iOS的体验能甩安卓几条街”这个有点儿出入：<br>Android采取的策略跟iOS一样的，同样有重用；<br>其实根本原因是iOS的UI线程是优先级最高的线程，当UI滑动的时候后台线程几乎是被挂起的状态；而Android则没有考虑这点，后台线程依然狂走，导致UI卡顿。</span><br/><p><span>xxnaxx</span><span>评论了</span><a href="http://www.cocoachina.com/ios/20150602/11968.html" title="详细整理：UITableView优化技巧" target="_blank" ><span>详细整理：UITableView优化技巧</span></a></p></li><li><span class="hide_comment">mark&nbsp;&nbsp;一下</span><br/><p><span>1234yws</span><span>评论了</span><a href="http://www.cocoachina.com/ios/20150703/12363.html" title="详解 UIView 的 Tint Color 属性" target="_blank" ><span>详解 UIView 的 Tint Color 属性</span></a></p></li><li><span class="hide_comment">mark..后面总结挺好</span><br/><p><span>芜阳湖</span><span>评论了</span><a href="http://www.cocoachina.com/design/20160223/15399.html" title="微信的那个老外产品经理又写了一篇《中国移动应用设计..." target="_blank" ><span>微信的那个老外产品经理又写了一篇《中国移动应用设计...</span></a></p></li><li class="noborder-b"><span class="hide_comment">全</span><br/><p><span>tianya2416</span><span>评论了</span><a href="http://www.cocoachina.com/ios/20160121/14988.html" title="超全！整理常用的iOS第三方资源" target="_blank" ><span>超全！整理常用的iOS第三方资源</span></a></p></li>
+                    </ul>
+                </div>
+                <!--./综合评论-->
+                <!--相关帖子-->
+                <div class="part-wrap clearfix" style="margin:15px 0 15px 0;">
+                    <h3>相关帖子</h3>
+                    <ul class="related-comment clearfix">
+                        <script charset="gb2312" src="http://www.cocoachina.com/bbs/new.php?action=article&fidin=21_18_2_8_19_41_59_48_56_14_36_5&digest=0&postdate=0&author=0&fname=0&hits=0&replies=0&pre=0&num=10&length=100&order=2&like=ios#Xcode 6"></script>
+                    </ul>
+                </div>
+                <!--./相关帖子-->
+                <iframe width="230" height="550" class="share_self" frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=230&height=550&fansRow=2&ptype=1&speed=0&skin=5&isTitle=1&noborder=1&isWeibo=1&isFans=0&uid=1659808677&verifier=6043be56&dpc=1"></iframe>
+                <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                <!-- CC列表页面230x230 -->
+                <ins class="adsbygoogle"
+                     style="display:inline-block;width:230px;height:230px"
+                     data-ad-client="ca-pub-1180518835303646"
+                     data-ad-slot="6765277166"></ins>
+                <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+        </div>
+        <!--./侧边栏-->
+    </div>
+
+    <div id="coco-store" style="display:none">
+        <div class="storebox">
+            <h5>提示</h5>
+            <h3>已经收藏该篇文章</h3>
+            <p class="p1"><a href="/bbs/u.php?action=favor&tag=1" target="_blank">去我的收藏夹</a></p>
+            <p class="p2"><a href="/bbs/login.php">请登录</a></p>
+        </div>
+    </div> <!--收藏提示-->
+</div>
+
+<script type="text/javascript">
+
+function postDigg(ftype,aid)
+{
+    var taget_obj = document.getElementById('newdigg');
+    var saveid = GetCookie('diggid');
+    if(saveid != null)
+    {
+        var saveids = saveid.split(',');
+        var hasid = false;
+        saveid = '';
+        j = 1;
+        for(i=saveids.length-1;i>=0;i--)
+        {
+            if(saveids[i]==aid && hasid) continue;
+            else {
+                if(saveids[i]==aid && !hasid) hasid = true;
+                saveid += (saveid=='' ? saveids[i] : ','+saveids[i]);
+                j++;
+                if(j==20 && hasid) break;
+                if(j==19 && !hasid) break;
+            }
+        }
+        if(hasid) { alert("您已经顶过该帖，请不要重复顶帖 ！"); return; }
+        else saveid += ','+aid;
+        SetCookie('diggid',saveid,1);
+    }
+    else
+    {
+        SetCookie('diggid',aid,1);
+    }
+    myajax = new DedeAjax(taget_obj,false,false,'','','');
+    var url = "/cms/plus/digg_ajax.php?action="+ftype+"&id="+aid;
+    myajax.SendGet2(url);
+    DedeXHTTP = null;
+    $('#zanbox').addClass('zanbox-selected');
+}
+function getDigg(aid)
+{
+    var taget_obj = document.getElementById('newdigg');
+    myajax = new DedeAjax(taget_obj,false,false,'','','');
+    myajax.SendGet2("/cms/plus/digg_ajax.php?id="+aid);
+    DedeXHTTP = null;
+}
+
+
+//显示对应的导航：
+$(function(){
+    var article_id = $('#article_id').val();
+    var saveid = GetCookie('diggid');
+
+    if(saveid != null)
+    {
+        var saveids = saveid.split(',');
+        var hasid = false;
+        saveid = '';
+        j = 1;
+        for(i=saveids.length-1;i>=0;i--)
+        {
+            if(saveids[i]==article_id && hasid) continue;
+            else {
+                if(saveids[i]==article_id && !hasid) hasid = true;
+                saveid += (saveid=='' ? saveids[i] : ','+saveids[i]);
+                j++;
+                if(j==20 && hasid) break;
+                if(j==19 && !hasid) break;
+            }
+        }
+
+        if(hasid)
+        {
+            $('#zanbox').addClass('zanbox-selected');
+        }
+
+    }
+
+});
+
+window.onload = function() {
+
+    $('#sharediv').removeClass('bdshare-button-style1-32');
+    $('#sharediv').attr('class','bdsharebuttonbox');
+};
+</script>
+<script type="text/javascript" src="http://cdn.cocimg.com/cms/templets/js/shCore.js"></script>
+    <script type="text/javascript" src="http://cdn.cocimg.com/cms/templets/js/brush.js"></script>
+    <link type="text/css" rel="stylesheet" href="http://cdn.cocimg.com/cms/templets/style/shCoreDefault.css"/>
+    <script type="text/javascript">
+    //SyntaxHighlighter.config.clipboardSwf = '/js/scripts/clipboard.swf';
+
+    SyntaxHighlighter.all();</script>
+
+
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"Xcode 6制作动态及静态Framework - 来自CocoaChina苹果开发中文站@CocoaChina","bdMini":"2","bdMiniList":false,"bdPic":"http://api.cocoachina.com/uploads/141126/c198a686ffa14d095e22b6e65902223b.jpg","bdStyle":"1","bdSize":"32"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api//js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+<!--./cont-->
+
+<!-- 回复评论框模板 -->
+<script type="text/javascript" src="http://cdn.cocimg.com/cms/templets/js/comment.js?v=20151019"></script>
+<script type="text/javascript" src="http://cdn.cocimg.com/cms/templets/js/mustache.min.js"></script>
+<!-- 回复评论框模板 -->
+<script id="reply_comment_template" type="x-tmpl-mustache">
+    <div id="sub-reply-comment" class="reply-comment">
+        <textarea name="subcomment" id="sub-reply-txt" cols="30" rows="10" placeholder="你怎么看？快来评论一下吧！"></textarea>
+        <input type="hidden" id="sub-reply-id" value="{{commentid}}" />
+        <input type="hidden" id="sub-reply-userid" value="{{parentuserid}}" />
+        <input type="hidden" id="sub-reply-username" value="{{parentusername}}" />
+        <a type="button" id="sub_comment_bt" class="submitbt">提交</a>
+        <div class="clearfloat"></div>
+        <div class="unlogin-mask">
+            <div>您还没有登录！请<a href="/bbs/login.php">登录</a>或<a href="/bbs/register.php">注册</a></div>
+        </div>
+    </div>
+</script>
+
+<!-- 评论模板 -->
+<script id="main_comment_template" type="x-tmpl-mustache">
+    <div class="glab-comment" rel-data-id="{{comment_id}}" rel-user-id="{{user_id}}" rel-user-name="{{user_name}}" rel-layer="1">
+        <div class="comment-left">
+            <a href="/bbs/u.php?action=feed&uid={{user_id}}" target="_blank"><img src="{{user_icon_url}}" height="43" width="43" alt=""></a>
+        </div>
+        <div class="comment-right">
+            <div class="comment-author"><a href="/bbs/u.php?action=feed&uid={{user_id}}" target="_blank">{{user_name}}</a><span class="puptime">{{create_time}}</span></div>
+            <div class="comment-content">{{&content}}</div>
+            <div class="comment-buttons">
+                <span class="ding">                    
+                    <img src="http://cdn.cocimg.com/cms/templets/images/zan-default.png" height="14" width="14" alt="" class="default" style="{{#has_supported}} display:none; {{/has_supported}}">
+                    <img src="http://cdn.cocimg.com/cms/templets/images/zan-active.png" height="14" width="14" alt="" class="actived" style="{{^has_supported}} display:none; {{/has_supported}}">
+                    <span class="zancnt">{{support}}</span>
+                </span>
+                <span class="cai">
+                    <img src="http://cdn.cocimg.com/cms/templets/images/cai-default.png" height="14" width="14" alt="" class="default" style="{{#has_reported}} display:none; {{/has_reported}}">
+                    <img src="http://cdn.cocimg.com/cms/templets/images/cai-active.png" height="14" width="14" alt="" class="actived" style="{{^has_reported}} display:none; {{/has_reported}}">
+                    <span class="zancnt">{{report}}</span>
+                </span>
+                <span class="replybt">回复</span>
+            </div>
+        </div>
+            {{#sub}}
+                <div class="glab-comment glab-sub-comment" rel-data-id="{{comment_id}}" rel-user-id="{{user_id}}" rel-user-name="{{user_name}}" rel-layer="2">
+                    <div class="comment-left">
+                        <a href="/bbs/u.php?action=feed&uid={{user_id}}" target="_blank"><img src="{{user_icon_url}}" height="43" width="43" alt=""></a>
+                    </div>
+                    <div class="comment-right">
+                        <div class="comment-author"><a href="/bbs/u.php?action=feed&uid={{user_id}}" target="_blank">{{user_name}}</a><span class="puptime">{{create_time}}</span></div>
+                        <div class="comment-content"><a href="/bbs/u.php?action=feed&uid={{parent_user_id}}" target="_blank">回复：{{parent}}</a>{{&content}}</div>
+                        <div class="comment-buttons">
+                            <span class="ding">
+                                <img src="http://cdn.cocimg.com/cms/templets/images/zan-default.png" height="14" width="14" alt="" class="default" style="{{#has_supported}} display:none; {{/has_supported}}">
+                                <img src="http://cdn.cocimg.com/cms/templets/images/zan-active.png" height="14" width="14" alt="" class="actived" style="{{^has_supported}} display:none; {{/has_supported}}">
+                                <span class="zancnt">{{support}}</span>
+                            </span>
+                            <span class="cai">
+                                <img src="http://cdn.cocimg.com/cms/templets/images/cai-default.png" height="14" width="14" alt="" class="default" style="{{#has_reported}} display:none; {{/has_reported}}">
+                                <img src="http://cdn.cocimg.com/cms/templets/images/cai-active.png" height="14" width="14" alt="" class="actived" style="{{^has_reported}} display:none; {{/has_reported}}">
+                                <span class="zancnt">{{report}}</span>
+                            </span>
+                            <span class="replybt">回复</span>
+                        </div>          
+                    </div>
+                </div>
+            {{/sub}}         
+    </div>  
+</script>
+
+
+<script id="sub_comment_template" type="x-tmpl-mustache">
+    <div class="glab-comment glab-sub-comment" rel-data-id="{{comment_id}}" rel-user-id="{{user_id}}" rel-user-name="{{user_name}}" rel-layer="2">
+        <div class="comment-left">
+            <a href="/bbs/u.php?action=feed&uid={{user_id}}" target="_blank"><img src="{{user_icon_url}}" height="43" width="43" alt=""></a>
+        </div>
+        <div class="comment-right">
+            <div class="comment-author"><a href="/bbs/u.php?action=feed&uid={{user_id}}" target="_blank">{{user_name}}</a><span class="puptime">{{create_time}}</span></div>
+            <div class="comment-content"><a href="/bbs/u.php?action=feed&uid={{parent_user_id}}" target="_blank">回复：{{parent}}</a>{{&content}}</div>
+            <div class="comment-buttons">
+                <span class="ding">
+                    <img src="http://cdn.cocimg.com/cms/templets/images/zan-default.png" height="14" width="14" alt="" class="default" style="{{#has_supported}} display:none; {{/has_supported}}">
+                    <img src="http://cdn.cocimg.com/cms/templets/images/zan-active.png" height="14" width="14" alt="" class="actived" style="{{^has_supported}} display:none; {{/has_supported}}">
+                    <span class="zancnt">{{support}}</span>
+                </span>
+                <span class="cai">
+                    <img src="http://cdn.cocimg.com/cms/templets/images/cai-default.png" height="14" width="14" alt="" class="default" style="{{#has_reported}} display:none; {{/has_reported}}">
+                    <img src="http://cdn.cocimg.com/cms/templets/images/cai-active.png" height="14" width="14" alt="" class="actived" style="{{^has_reported}} display:none; {{/has_reported}}">
+                    <span class="zancnt">{{report}}</span>
+                </span>
+                <span class="replybt">回复</span>
+            </div>          
+        </div>
+    </div>
+</script>
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-68948817-1', 'auto', {'name': 'newTracker'});
+  ga('newTracker.send', 'pageview');
+
+</script>
+</div>    
+<!--右侧浮动-->
+    <div class="r-bar">
+        <img src="http://cdn.cocimg.com/cms/templets/images/coco_weixin.png" class="weixin">
+    	<a href="http://weibo.com/cocoachina" target="_blank" title="" class="weibo">sina</a>
+        <a href="javascript:void(0);" target="_blank" title="" class="feedback">weixin</a>
+        <a href="mailto:support@cocoachina.com" title="" class="kefu">mail</a>
+        <a href="javascript:;" title="回到顶部" class="returntop">回到顶部</a>
+    </div>
+
+<script language="javascript" src="/cms/bbsauth_plus2015.php" type="text/javascript"></script>
+<script type="text/javascript">
+$(function(){
+    if (typeof(_user_info_html) != 'undefined' && _user_info_html)
+    {
+        $('.nav-user-login').hide();
+        $('.nav-user-name').html(_user_info_html).show();
+    }
+
+	var type = $('#type_name').html();
+	if(type)
+	{	
+		switch( type )
+		{
+			case 'iOS开发':
+				$('#ios').addClass('light');
+				break;
+			case 'AppStore研究':
+				$('#app_store').addClass('light');
+				break;
+			case 'Mac开发':
+				$('#mac').addClass('light');
+				break;
+			case '产品设计':
+				$('#design').addClass('light');
+				break;
+			case 'Cocos引擎':
+				$('#cocos').addClass('light');
+				break;
+			case 'WebApp':
+				$('#webapp').addClass('light');
+				break;
+			case 'Swift':
+				$('#swift').addClass('light');
+				break;
+			case '游戏开发':
+				$('#game').addClass('light');
+				break;
+			case '苹果相关':
+				$('#apple').addClass('light');
+				break;
+			case '营销推广':
+				$('#market').addClass('light');
+				break;		
+			case '业界动态':
+				$('#industry').addClass('light');
+				break;	
+			case '程序人生':
+				$('#programmer').addClass('light');
+				break;																																
+				
+		}
+	}
+});
+</script>
+<!--./cont-->
+<script type="text/javascript" src="/cms/templets/js/index.js?20111546514"></script>
+<script src="http://cdn.cocimg.com/cms/templets/js/jquery.colorbox-min.js" type="text/javascript"></script>
+<script language="javascript" src="/cms/bbsauth_new2015.php"  type="text/javascript"></script>
+<script src="/cms/templets/js/script.js?t=2045479411" type="text/javascript"></script>
+<script type="text/javascript">
+			jQuery(function()
+			{
+				//更改文章来源
+				var source = $('#source a').html();								
+				if( source == '未知' )
+					jQuery('#source a').html('CocoaChina');
+				if( jQuery('#source a').attr('href')=='')
+					jQuery('#source').html('来源：'+source);
+				
+				//获取用户登录的id
+//                var content = jQuery('.t-lid').attr("href");
+//                var uid = 0;
+//                if( content )
+//                {
+//                    content = content.split('=');
+//                    uid = content[1];
+//                }
+//                var timestamp = new Date().getTime();	
+//                var uid2 = parseInt(uid);
+//                if(uid2==uid && uid2!=0){
+//                    uid = uid<<2;			
+//                    uid = uid+''+timestamp;
+//                }else{
+//                    uid = "";
+//                }
+//                var oIframe=document.getElementById("comiframe");
+//                if(oIframe){
+//                    var oUrl=window.location.href;
+//                    oUrl = encodeURIComponent(oUrl);
+//
+//                    oIframe.src="/comment.php?url="+oUrl+"&uid="+uid;
+//                }
+
+				
+			});
+		</script>
+<!--footer-->
+<div class="footer clearfix">
+    <div class="footer-b">
+        <div>
+            <a href="/aboutus/index.html" target="_blank">关于我们</a>
+            <a href="/contactus/index.html" target="_blank">商务合作</a>
+            <a href="mailto:support@cocoachina.com" target="_blank">联系我们</a>
+            <a href="/corps" target="_blank">合作伙伴</a>
+        </div>
+        <p class="footer-b-p">北京触控科技有限公司版权所有</p>
+        <p>
+            &copy;2016 Chukong Technologies,Inc.
+            <i>
+                <a href="http://www.miibeian.gov.cn/" target="_blank">京ICP备 11006519号 　京ICP证 100954号</a> 京公网安备11010502020289 
+                <a href="http://182.131.21.137/ccnt-apply/admin/business/preview/business-preview!lookUrlRFID.action?main_id=A580B24B1AE846CE9DA949026D63939F" target="_blank">
+                    <img src="http://cdn.cocimg.com/cms/templets/images/jingwen.png" style="margin: -10px auto -14px -10px;" />
+                    京网文[2012]0426-138号
+                </a>
+            </i>
+        </p>
+    </div>
+</div>
+<!--./footer-->
+<script language="javascript" type="text/javascript" src="/cms/include/dedeajax2-min.js"></script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-16940817-2']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+  
+ 
+function search_check()
+{
+	var search_keyword = $('#search_keyword').val();
+
+	if( search_keyword.length < 2 )
+	{
+		alert("搜索关键字不能少于2个字节，请重新输入。");
+	}
+	else
+	{
+		$('#searchform').submit();
+	}
+}
+
+</script>
+<script type="text/javascript">
+_acK({aid:116313,format:0,mode:1,gid:1,serverbaseurl:"afp.csbew.com/"});
+</script>
+
+</body>
+</html>
