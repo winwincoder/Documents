@@ -1,0 +1,399 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-cn">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>android和iOS平台的崩溃捕获和收集 - Bill Yuan - 博客园</title>
+<link type="text/css" rel="stylesheet" href="/bundles/blog-common.css?v=8F6jO9aWZhOryqKsIFGUkSbXpyPVKDwgWwvpie3eJis1"/>
+<link id="MainCss" type="text/css" rel="stylesheet" href="/skins/ClearGertrude/bundle-ClearGertrude.css?v=UG7v3-2SuMM4YPbE5MXLq5i922iClh9EvCukmUFSLbg1"/>
+<link title="RSS" type="application/rss+xml" rel="alternate" href="http://www.cnblogs.com/sevenyuan/rss"/>
+<link title="RSD" type="application/rsd+xml" rel="EditURI" href="http://www.cnblogs.com/sevenyuan/rsd.xml"/>
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="http://www.cnblogs.com/sevenyuan/wlwmanifest.xml"/>
+<script src="http://common.cnblogs.com/script/jquery.js" type="text/javascript"></script>  
+<script type="text/javascript">var currentBlogApp = 'sevenyuan', cb_enable_mathjax=false;</script>
+<script src="/bundles/blog-common.js?v=ceHMEpeJXcR_f7TCJnXeZQRG1UsC0_cpwDJRs_oVInY1" type="text/javascript"></script>
+</head>
+<body>
+<a name="top"></a>
+
+<div id="header">
+<h1><a id="Header1_HeaderTitle" class="headermaintitle" href="http://www.cnblogs.com/sevenyuan/">智慧 + 毅力 = 无所不能</a></h1>
+<p id="tagline">正确性、健壮性、可靠性、效率、易用性、可读性、可复用性、兼容性、可移植性...</p></div>
+<div id="main">
+	
+<div id="post_detail">
+	<div class="post">
+		<h2>
+			<a id="cb_post_title_url" href="http://www.cnblogs.com/sevenyuan/p/4347757.html">android和iOS平台的崩溃捕获和收集</a>
+		</h2>
+		<div class="postText"><div id="cnblogs_post_body"><p>转自：http://www.cnblogs.com/lancidie/archive/2013/04/13/3019349.html</p>
+<p>通过崩溃捕获和收集，可以收集到已发布应用（游戏）的异常，以便开发人员发现和修改bug，对于提高软件质量有着极大的帮助。本文介绍了iOS和android平台下崩溃捕获和收集的原理及步骤，不过如果是个人开发应用或者没有特殊限制的话，就不用往下看了，直接把友盟sdk（一个统计分析sdk）加入到工程中就万事大吉了，其中的错误日志功能完全能够满足需求，而且不需要额外准备接收服务器。&nbsp; 但是如果你对其原理更感兴趣，或者像我一样必须要兼容公司现有的bug收集系统，那么下面的东西就值得一看了。</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 要实现崩溃捕获和收集的困难主要有这么几个：</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1、如何捕获崩溃（比如c++常见的野指针错误或是内存读写越界，当发生这些情况时程序不是异常退出了吗，我们如何捕获它呢）</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2、如何获取堆栈信息（告诉我们崩溃是哪个函数，甚至是第几行发生的，这样我们才可能重现并修改问题）</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3、将错误日志上传到指定服务器（这个最好办）</p>
+<p>&nbsp;</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 我们先进行一个简单的综述。会引发崩溃的代码本质上就两类，一个是c++语言层面的错误，比如野指针，除零，内存访问异常等等；另一类是未捕获异常（Uncaught Exception），iOS下面最常见的就是objective-c的NSException（通过@throw抛出，比如，NSArray访问元素越界），android下面就是java抛出的异常了。这些异常如果没有在最上层try住，那么程序就崩溃了。&nbsp; 无论是iOS还是android系统，其底层都是unix或者是类unix系统，对于第一类语言层面的错误，可以通过信号机制来捕获（signal或者是sigaction，不要跟qt的信号插槽弄混了），即任何系统错误都会抛出一个错误信号，我们可以通过设定一个回调函数，然后在回调函数里面打印并发送错误日志。</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 一、iOS平台的崩溃捕获和收集</p>
+<p>1、设置开启崩溃捕获</p>
+<div class="cnblogs_code">
+<pre>static int s_fatal_signals[] =<span style="color: #000000;"> { 
+    SIGABRT, 
+    SIGBUS, 
+    SIGFPE, 
+    SIGILL, 
+    SIGSEGV, 
+    SIGTRAP, 
+    SIGTERM, 
+    SIGKILL, 
+}; 
+ 
+static const char</span>* s_fatal_signal_names[] =<span style="color: #000000;"> { 
+    </span><span style="color: #800000;">"</span><span style="color: #800000;">SIGABRT</span><span style="color: #800000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #800000;">"</span><span style="color: #800000;">SIGBUS</span><span style="color: #800000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #800000;">"</span><span style="color: #800000;">SIGFPE</span><span style="color: #800000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #800000;">"</span><span style="color: #800000;">SIGILL</span><span style="color: #800000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #800000;">"</span><span style="color: #800000;">SIGSEGV</span><span style="color: #800000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #800000;">"</span><span style="color: #800000;">SIGTRAP</span><span style="color: #800000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #800000;">"</span><span style="color: #800000;">SIGTERM</span><span style="color: #800000;">"</span><span style="color: #000000;">, 
+    </span><span style="color: #800000;">"</span><span style="color: #800000;">SIGKILL</span><span style="color: #800000;">"</span><span style="color: #000000;">, 
+}; 
+ 
+static int s_fatal_signal_num </span>= <span style="color: #0000ff;">sizeof</span>(s_fatal_signals) / <span style="color: #0000ff;">sizeof</span>(s_fatal_signals[<span style="color: #800080;">0</span><span style="color: #000000;">]); 
+ 
+</span><span style="color: #0000ff;">void</span><span style="color: #000000;"> InitCrashReport() 
+{ 
+        </span><span style="color: #008000;">//</span><span style="color: #008000;"> 1     linux错误信号捕获 </span>
+    <span style="color: #0000ff;">for</span> (<span style="color: #0000ff;">int</span> i = <span style="color: #800080;">0</span>; i &lt; s_fatal_signal_num; ++<span style="color: #000000;">i) { 
+        signal(s_fatal_signals[i], SignalHandler); 
+    } 
+     
+        </span><span style="color: #008000;">//</span><span style="color: #008000;"> 2      objective-c未捕获异常的捕获 </span>
+    NSSetUncaughtExceptionHandler(&amp;<span style="color: #000000;">HandleException); 
+} </span></pre>
+</div>
+<p>在游戏的最开始调用InitCrashReport()函数来开启崩溃捕获。&nbsp; 注释1处对应上文所说的第一类崩溃，注释2处对应objective-c（或者说是UIKit Framework）抛出但是没有被处理的异常。</p>
+<p>2、打印堆栈信息</p>
+<div class="cnblogs_code">
+<pre>+ (NSArray *<span style="color: #000000;">)backtrace 
+{ 
+    </span><span style="color: #0000ff;">void</span>* callstack[<span style="color: #800080;">128</span><span style="color: #000000;">]; 
+    </span><span style="color: #0000ff;">int</span> frames = backtrace(callstack, <span style="color: #800080;">128</span><span style="color: #000000;">); 
+    </span><span style="color: #0000ff;">char</span> **strs =<span style="color: #000000;"> backtrace_symbols(callstack, frames); 
+     
+    </span><span style="color: #0000ff;">int</span><span style="color: #000000;"> i; 
+    NSMutableArray </span>*backtrace =<span style="color: #000000;"> [NSMutableArray arrayWithCapacity:frames]; 
+    </span><span style="color: #0000ff;">for</span> (i =<span style="color: #000000;"> kSkipAddressCount; 
+         i </span>&lt; __min(kSkipAddressCount +<span style="color: #000000;"> kReportAddressCount, frames); 
+         </span>++<span style="color: #000000;">i) { 
+        [backtrace addObject:[NSString stringWithUTF8String:strs[i]]]; 
+    } 
+    free(strs); 
+     
+    </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> backtrace; 
+} </span></pre>
+</div>
+<p>幸好，苹果的iOS系统支持backtrace，通过这个函数可以直接打印出程序崩溃的调用堆栈。优点是，什么符号函数表都不需要，也不需要保存发布出去的对应版本，直接查看崩溃堆栈。缺点是，不能打印出具体哪一行崩溃，很多问题知道了是哪个函数崩的，但是还是查不出是因为什么崩的<img src="http://static.blog.csdn.net/xheditor/xheditor_emot/default/wail.gif" alt="大哭" /></p>
+<p>&nbsp;</p>
+<p>3、日志上传，这个需要看实际需求，比如我们公司就是把崩溃信息http post到一个php服务器。这里就不多做声明了。</p>
+<p>4、技巧---崩溃后程序保持运行状态而不退出</p>
+<div class="cnblogs_code">
+<pre>CFRunLoopRef runLoop =<span style="color: #000000;"> CFRunLoopGetCurrent(); 
+CFArrayRef allModes </span>=<span style="color: #000000;"> CFRunLoopCopyAllModes(runLoop); 
+     
+</span><span style="color: #0000ff;">while</span> (!<span style="color: #000000;">dismissed) 
+{ 
+    </span><span style="color: #0000ff;">for</span> (NSString *mode <span style="color: #0000ff;">in</span> (__bridge NSArray *<span style="color: #000000;">)allModes) 
+    { 
+        CFRunLoopRunInMode((__bridge CFStringRef)mode, </span><span style="color: #800080;">0.001</span>, <span style="color: #0000ff;">false</span><span style="color: #000000;">); 
+    } 
+} 
+     
+CFRelease(allModes); </span></pre>
+</div>
+<p>在崩溃处理函数上传完日志信息后，调用上述代码，可以重新构建程序主循环。这样，程序即便崩溃了，依然可以正常运行（当然，这个时候是处于不稳定状态，但是由于手持游戏和应用大多是短期操作，不会有挂机这种说法，所以稳定与否就无关紧要了）。玩家甚至感受不到崩溃。</p>
+<p>&nbsp;</p>
+<p>这里要在说明一个感念，那就是&ldquo;可重入（reentrant）&rdquo;。简单来说，当我们的崩溃回调函数是可重入的时候，那么再次发生崩溃的时候，依然可以正常运行这个新的函数；但是如果是不可重入的，则无法运行（这个时候就彻底死了）。要实现上面描述的效果，并且还要保证回调函数是可重入的几乎不可能。所以，我测试的结果是，objective-c的异常触发多少次都可以正常运行。但是如果多次触发错误信号，那么程序就会卡死。&nbsp; 所以要慎重决定是否要应用这个技巧。</p>
+<p>&nbsp;</p>
+<p>二、android崩溃捕获和收集</p>
+<p>1、android开启崩溃捕获</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 首先是java代码的崩溃捕获，这个可以仿照最下面的完整代码写一个UncaughtExceptionHandler，然后在所有的Activity的onCreate函数最开始调用<br />Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler(this));</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 这样，当发生崩溃的时候，就会自动调用UncaughtExceptionHandler的public void uncaughtException(Thread thread, Throwable exception)函数，其中的exception包含堆栈信息，我们可以在这个函数里面打印我们需要的信息，并且上传错误日志</p>
+<p>&nbsp;&nbsp;&nbsp; 然后是重中之重，jni的c++代码如何进行崩溃捕获。</p>
+<div class="cnblogs_code">
+<pre></pre>
+<p align="left"><span lang="EN-US">#include<span lang="EN-US">&nbsp;&lt;signal.h&gt;</span></span></p>
+<p align="left"><span lang="EN-US">#include<span lang="EN-US">&nbsp;&lt;stdlib.h&gt;</span></span></p>
+<p align="left"><span lang="EN-US">static<span lang="EN-US">&nbsp;struct&nbsp;sigaction old_sa[NSIG];</span></span></p>
+<pre><span style="color: #0000ff;">void</span><span style="color: #000000;"> InitCrashReport() 
+{ 
+    CCLOG(</span><span style="color: #800000;">"</span><span style="color: #800000;">InitCrashReport</span><span style="color: #800000;">"</span><span style="color: #000000;">); 
+ 
+    </span><span style="color: #008000;">//</span><span style="color: #008000;"> Try to catch crashes... </span>
+    <span style="color: #0000ff;">struct</span><span style="color: #000000;"> sigaction handler; 
+    memset(</span>&amp;handler, <span style="color: #800080;">0</span>, <span style="color: #0000ff;">sizeof</span>(<span style="color: #0000ff;">struct</span><span style="color: #000000;"> sigaction)); 
+ 
+    handler.sa_sigaction </span>=<span style="color: #000000;"> android_sigaction; 
+    handler.sa_flags </span>=<span style="color: #000000;"> SA_RESETHAND; 
+ 
+</span><span style="color: #0000ff;">#define</span> CATCHSIG(X) sigaction(X, &amp;handler, &amp;old_sa[X]) <span style="color: #000000;">
+    CATCHSIG(SIGILL); 
+    CATCHSIG(SIGABRT); 
+    CATCHSIG(SIGBUS); 
+    CATCHSIG(SIGFPE); 
+    CATCHSIG(SIGSEGV); 
+    CATCHSIG(SIGSTKFLT); 
+    CATCHSIG(SIGPIPE); 
+} </span></pre>
+</div>
+<p>通过singal的设置，当崩溃发生的时候就会调用android_sigaction函数。这同样是linux的信号机制。 此处设置信号回调函数的代码跟iOS有点不同，这个只是同一个功能的两种不同写法，没有本质区别。有兴趣的可以google下两者的区别。</p>
+<p>&nbsp;</p>
+<p>2、打印堆栈</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; java语法可以直接通过exception获取到堆栈信息，但是jni代码不支持backtrace，那么我们如何获取堆栈信息呢？&nbsp;&nbsp;&nbsp; 这里有个我想尝试的新方法，就是使用google breakpad，貌似它现在完整的跨平台了（支持windows, mac, linux, iOS和android等），它自己实现了一套minidump，在android上面限制会小很多。&nbsp; 但是这个库有些大，估计要加到我们的工程中不是一件非常容易的事，所以我们还是使用了简洁的&ldquo;传统&rdquo;方案。 思路是，当发生崩溃的时候，在回调函数里面调用一个我们在Activity写好的静态函数。在这个函数里面通过执行命令获取logcat的输出信息（输出信息里面包含了jni的崩溃地址），然后上传这个崩溃信息。&nbsp; 当我们获取到崩溃信息后，可以通过arm-linux-androideabi-addr2line（具体可能不是这个名字，在android ndk里面搜索*addr2line，找到实际的程序）解析崩溃信息。</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; jni的崩溃回调函数如下：</p>
+<div class="cnblogs_code">
+<pre><span style="color: #0000ff;">void</span> android_sigaction(<span style="color: #0000ff;">int</span> signal, siginfo_t *info, <span style="color: #0000ff;">void</span> *<span style="color: #000000;">reserved) 
+{ 
+    </span><span style="color: #0000ff;">if</span> (!<span style="color: #000000;">g_env) { 
+        </span><span style="color: #0000ff;">return</span><span style="color: #000000;">; 
+    } 
+ 
+    jclass classID </span>= g_env-&gt;<span style="color: #000000;">FindClass(CLASS_NAME); 
+    </span><span style="color: #0000ff;">if</span> (!<span style="color: #000000;">classID) { 
+        </span><span style="color: #0000ff;">return</span><span style="color: #000000;">; 
+    } 
+ 
+    jmethodID methodID </span>= g_env-&gt;GetStaticMethodID(classID, <span style="color: #800000;">"</span><span style="color: #800000;">onNativeCrashed</span><span style="color: #800000;">"</span>, <span style="color: #800000;">"</span><span style="color: #800000;">()V</span><span style="color: #800000;">"</span><span style="color: #000000;">); 
+    </span><span style="color: #0000ff;">if</span> (!<span style="color: #000000;">methodID) { 
+        </span><span style="color: #0000ff;">return</span><span style="color: #000000;">; 
+    } 
+ 
+    g_env</span>-&gt;<span style="color: #000000;">CallStaticVoidMethod(classID, methodID); 
+ 
+    old_sa[signal].sa_handler(signal); 
+} </span></pre>
+</div>
+<p>可以看到，我们仅仅是通过jni调用了java的一个函数，然后所有的处理都是在java层面完成。</p>
+<p>&nbsp;</p>
+<p>java对应的函数实现如下：</p>
+<div class="cnblogs_code">
+<pre><span style="color: #000000;">public static void onNativeCrashed() { 
+    </span><span style="color: #008000;">//</span> <span style="color: #008000; text-decoration: underline;">http://stackoverflow.com/questions/1083154/how-can-i-catch-sigsegv-segmentation-fault-and-get-a-stack-trace-under-jni-on-a</span> 
+    Log.e(<span style="color: #800000;">"</span><span style="color: #800000;">handller</span><span style="color: #800000;">"</span>, <span style="color: #800000;">"</span><span style="color: #800000;">handle</span><span style="color: #800000;">"</span><span style="color: #000000;">); 
+    </span><span style="color: #0000ff;">new</span> RuntimeException(<span style="color: #800000;">"</span><span style="color: #800000;">crashed here (native trace should follow after the Java trace)</span><span style="color: #800000;">"</span><span style="color: #000000;">).printStackTrace(); 
+    s_instance.startActivity(</span><span style="color: #0000ff;">new</span> Intent(s_instance, CrashHandler.<span style="color: #0000ff;">class</span><span style="color: #000000;">)); 
+} </span></pre>
+</div>
+<p>我们开启了一个新的activity，因为当jni发生崩溃的时候，原始的activity可能已经结束掉了。&nbsp; 这个新的activity实现如下：</p>
+<div class="cnblogs_code">
+<pre><span style="color: #000000;">publicclass CrashHandler extends Activity 
+{ 
+    publicstaticfinal String TAG </span>= <span style="color: #800000;">"</span><span style="color: #800000;">CrashHandler</span><span style="color: #800000;">"</span><span style="color: #000000;">; 
+    protectedvoid onCreate(Bundle state) 
+    { 
+        super.onCreate(state); 
+        setTitle(R.</span><span style="color: #0000ff;">string</span><span style="color: #000000;">.crash_title); 
+        setContentView(R.layout.crashhandler); 
+        TextView v </span>=<span style="color: #000000;"> (TextView)findViewById(R.id.crashText); 
+        v.setText(MessageFormat.format(getString(R.</span><span style="color: #0000ff;">string</span>.crashed), getString(R.<span style="color: #0000ff;">string</span><span style="color: #000000;">.app_name))); 
+        final Button b </span>=<span style="color: #000000;"> (Button)findViewById(R.id.report), 
+              c </span>=<span style="color: #000000;"> (Button)findViewById(R.id.close); 
+        b.setOnClickListener(</span><span style="color: #0000ff;">new</span><span style="color: #000000;"> View.OnClickListener(){ 
+            publicvoid onClick(View v){ 
+                final ProgressDialog progress </span>= <span style="color: #0000ff;">new</span> ProgressDialog(CrashHandler.<span style="color: #0000ff;">this</span><span style="color: #000000;">); 
+                progress.setMessage(getString(R.</span><span style="color: #0000ff;">string</span><span style="color: #000000;">.getting_log)); 
+                progress.setIndeterminate(</span><span style="color: #0000ff;">true</span><span style="color: #000000;">); 
+                progress.setCancelable(</span><span style="color: #0000ff;">false</span><span style="color: #000000;">); 
+                progress.show(); 
+                final AsyncTask task </span>= <span style="color: #0000ff;">new</span> LogTask(CrashHandler.<span style="color: #0000ff;">this</span><span style="color: #000000;">, progress).execute(); 
+                b.postDelayed(</span><span style="color: #0000ff;">new</span><span style="color: #000000;"> Runnable(){ 
+                    publicvoid run(){ 
+                        </span><span style="color: #0000ff;">if</span> (task.getStatus() ==<span style="color: #000000;"> AsyncTask.Status.FINISHED) 
+                            </span><span style="color: #0000ff;">return</span><span style="color: #000000;">; 
+                        </span><span style="color: #008000;">//</span><span style="color: #008000;"> It's probably one of these devices where some fool broke logcat. </span>
+<span style="color: #000000;">                        progress.dismiss(); 
+                        task.cancel(</span><span style="color: #0000ff;">true</span><span style="color: #000000;">); 
+                        </span><span style="color: #0000ff;">new</span> AlertDialog.Builder(CrashHandler.<span style="color: #0000ff;">this</span><span style="color: #000000;">) 
+                            .setMessage(MessageFormat.format(getString(R.</span><span style="color: #0000ff;">string</span>.get_log_failed), getString(R.<span style="color: #0000ff;">string</span><span style="color: #000000;">.author_email))) 
+                            .setCancelable(</span><span style="color: #0000ff;">true</span><span style="color: #000000;">) 
+                            .setIcon(android.R.drawable.ic_dialog_alert) 
+                            .show(); 
+                    }}, </span><span style="color: #800080;">3000</span><span style="color: #000000;">); 
+            }}); 
+        c.setOnClickListener(</span><span style="color: #0000ff;">new</span><span style="color: #000000;"> View.OnClickListener(){ 
+            publicvoid onClick(View v){ 
+                finish(); 
+            }}); 
+    } 
+ 
+    </span><span style="color: #0000ff;">static</span><span style="color: #000000;"> String getVersion(Context c) 
+    { 
+        </span><span style="color: #0000ff;">try</span><span style="color: #000000;"> { 
+            </span><span style="color: #0000ff;">return</span> c.getPackageManager().getPackageInfo(c.getPackageName(),<span style="color: #800080;">0</span><span style="color: #000000;">).versionName; 
+        } </span><span style="color: #0000ff;">catch</span><span style="color: #000000;">(Exception e) { 
+            </span><span style="color: #0000ff;">return</span> c.getString(R.<span style="color: #0000ff;">string</span><span style="color: #000000;">.unknown_version); 
+        } 
+    } 
+} 
+ 
+</span><span style="color: #0000ff;">class</span> LogTask extends AsyncTask&lt;Void, Void, Void&gt;<span style="color: #000000;"> 
+{ 
+    Activity activity; 
+    String logText; 
+    Process process; 
+    ProgressDialog progress;  
+ 
+    LogTask(Activity a, ProgressDialog p) { 
+        activity </span>=<span style="color: #000000;"> a; 
+        progress </span>=<span style="color: #000000;"> p; 
+    } 
+ 
+    @Override 
+    </span><span style="color: #0000ff;">protected</span><span style="color: #000000;"> Void doInBackground(Void... v) { 
+        </span><span style="color: #0000ff;">try</span><span style="color: #000000;"> { 
+            Log.e(</span><span style="color: #800000;">"</span><span style="color: #800000;">crash</span><span style="color: #800000;">"</span>, <span style="color: #800000;">"</span><span style="color: #800000;">doInBackground begin</span><span style="color: #800000;">"</span><span style="color: #000000;">); 
+            process </span>= Runtime.getRuntime().exec(<span style="color: #0000ff;">new</span> String[]{<span style="color: #800000;">"</span><span style="color: #800000;">logcat</span><span style="color: #800000;">"</span>,<span style="color: #800000;">"</span><span style="color: #800000;">-d</span><span style="color: #800000;">"</span>,<span style="color: #800000;">"</span><span style="color: #800000;">-t</span><span style="color: #800000;">"</span>,<span style="color: #800000;">"</span><span style="color: #800000;">500</span><span style="color: #800000;">"</span>,<span style="color: #800000;">"</span><span style="color: #800000;">-v</span><span style="color: #800000;">"</span>,<span style="color: #800000;">"</span><span style="color: #800000;">threadtime</span><span style="color: #800000;">"</span><span style="color: #000000;">}); 
+            logText </span>=<span style="color: #000000;"> UncaughtExceptionHandler.readFromLogcat(process.getInputStream()); 
+            Log.e(</span><span style="color: #800000;">"</span><span style="color: #800000;">crash</span><span style="color: #800000;">"</span>, <span style="color: #800000;">"</span><span style="color: #800000;">doInBackground end</span><span style="color: #800000;">"</span><span style="color: #000000;">); 
+        } </span><span style="color: #0000ff;">catch</span><span style="color: #000000;"> (IOException e) { 
+            e.printStackTrace(); 
+            Toast.makeText(activity, e.toString(), Toast.LENGTH_LONG).show(); 
+        } 
+        returnnull; 
+    } 
+ 
+    @Override 
+    protectedvoid onCancelled() { 
+        Log.e(</span><span style="color: #800000;">"</span><span style="color: #800000;">crash</span><span style="color: #800000;">"</span>, <span style="color: #800000;">"</span><span style="color: #800000;">onCancelled</span><span style="color: #800000;">"</span><span style="color: #000000;">); 
+        process.destroy(); 
+    } 
+ 
+    @Override 
+    protectedvoid onPostExecute(Void v) { 
+        Log.e(</span><span style="color: #800000;">"</span><span style="color: #800000;">crash</span><span style="color: #800000;">"</span>, <span style="color: #800000;">"</span><span style="color: #800000;">onPostExecute</span><span style="color: #800000;">"</span><span style="color: #000000;">); 
+        progress.setMessage(activity.getString(R.</span><span style="color: #0000ff;">string</span><span style="color: #000000;">.starting_email)); 
+        UncaughtExceptionHandler.sendLog(logText, activity); 
+        progress.dismiss(); 
+        activity.finish(); 
+        Log.e(</span><span style="color: #800000;">"</span><span style="color: #800000;">crash</span><span style="color: #800000;">"</span>, <span style="color: #800000;">"</span><span style="color: #800000;">onPostExecute over</span><span style="color: #800000;">"</span><span style="color: #000000;">); 
+    } </span></pre>
+</div>
+<p>最主要的地方是doInBackground函数，这个函数通过logcat获取了崩溃信息。 不要忘记在AndroidManifest.xml添加读取LOG的权限</p>
+<div class="cnblogs_code">
+<pre>&lt;uses-permissionandroid:name=<span style="color: #800000;">"</span><span style="color: #800000;">android.permission.READ_LOGS</span><span style="color: #800000;">"</span>/&gt; </pre>
+</div>
+<p>3、获取到错误日志后，就可以写到sd卡（同样不要忘记添加权限），或者是上传。&nbsp; 代码很容易google到，不多说了。&nbsp; 最后再说下如何解析这个错误日志。</p>
+<p>&nbsp;</p>
+<p>我们在获取到的错误日志中，可以截取到如下信息：</p>
+<div class="cnblogs_code">
+<pre><span style="color: #800080;">12</span>-<span style="color: #800080;">12</span> <span style="color: #800080;">20</span>:<span style="color: #800080;">41</span>:<span style="color: #800080;">31.807</span> <span style="color: #800080;">24206</span> <span style="color: #800080;">24206</span><span style="color: #000000;"> I DEBUG   :  
+</span><span style="color: #800080;">12</span>-<span style="color: #800080;">12</span> <span style="color: #800080;">20</span>:<span style="color: #800080;">41</span>:<span style="color: #800080;">31.847</span> <span style="color: #800080;">24206</span> <span style="color: #800080;">24206</span> I DEBUG   :          #<span style="color: #800080;">00</span>  pc 004931f8  /data/data/org.cocos2dx.wing/lib/<span style="color: #000000;">libhelloworld.so 
+</span><span style="color: #800080;">12</span>-<span style="color: #800080;">12</span> <span style="color: #800080;">20</span>:<span style="color: #800080;">41</span>:<span style="color: #800080;">31.847</span> <span style="color: #800080;">24206</span> <span style="color: #800080;">24206</span> I DEBUG   :          #<span style="color: #800080;">01</span>  pc 005b3a5e  /data/data/org.cocos2dx.wing/lib/<span style="color: #000000;">libhelloworld.so 
+</span><span style="color: #800080;">12</span>-<span style="color: #800080;">12</span> <span style="color: #800080;">20</span>:<span style="color: #800080;">41</span>:<span style="color: #800080;">31.847</span> <span style="color: #800080;">24206</span> <span style="color: #800080;">24206</span> I DEBUG   :          #<span style="color: #800080;">02</span>  pc 005aab68  /data/data/org.cocos2dx.wing/lib/<span style="color: #000000;">libhelloworld.so 
+</span><span style="color: #800080;">12</span>-<span style="color: #800080;">12</span> <span style="color: #800080;">20</span>:<span style="color: #800080;">41</span>:<span style="color: #800080;">31.847</span> <span style="color: #800080;">24206</span> <span style="color: #800080;">24206</span> I DEBUG   :          #<span style="color: #800080;">03</span>  pc 005ad8aa  /data/data/org.cocos2dx.wing/lib/<span style="color: #000000;">libhelloworld.so 
+</span><span style="color: #800080;">12</span>-<span style="color: #800080;">12</span> <span style="color: #800080;">20</span>:<span style="color: #800080;">41</span>:<span style="color: #800080;">31.847</span> <span style="color: #800080;">24206</span> <span style="color: #800080;">24206</span> I DEBUG   :          #<span style="color: #800080;">04</span>  pc 005924a4  /data/data/org.cocos2dx.wing/lib/<span style="color: #000000;">libhelloworld.so 
+</span><span style="color: #800080;">12</span>-<span style="color: #800080;">12</span> <span style="color: #800080;">20</span>:<span style="color: #800080;">41</span>:<span style="color: #800080;">31.847</span> <span style="color: #800080;">24206</span> <span style="color: #800080;">24206</span> I DEBUG   :          #<span style="color: #800080;">05</span>  pc 005929b6  /data/data/org.cocos2dx.wing/lib/libhelloworld.so </pre>
+</div>
+<div class="cnblogs_code">
+<pre>004931f8 </pre>
+</div>
+<pre name="code" class="plain">004931f8</pre>
+<p>这个就是我们崩溃函数的地址，&nbsp; libhelloworld.so就是崩溃的动态库。我们要使用addr2line对这个动态库进行解析（注意要是obj/local目录下的那个比较大的，含有符号文件的动态库，不是Libs目录下比较小的，同时发布版本时，这个动态库也要保存好，之后查log都要有对应的动态库）。命令如下：</p>
+<p>&nbsp;</p>
+<p>arm-linux-androideabi-addr2line.exe -e 动态库名称&nbsp; 崩溃地址</p>
+<p>例如：</p>
+<div class="cnblogs_code">
+<pre>$ /cygdrive/d/devandroid/android-ndk-r8c-windows/android-ndk-r8c/toolchains/arm-linux-androideabi-<span style="color: #800080;">4.6</span>/prebuilt/windows/bin/arm-linux-androideabi-addr2line.exe -e obj/local/armeabi-v7a/libhelloworld.so 004931f8 </pre>
+</div>
+<p>得到的结果就是哪个cpp文件第几行崩溃。&nbsp; 如果动态库信息不对，返回的就是 ?:0</p>
+<p>&nbsp;</p></div><div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="BlogPostCategory"></div>
+<div id="EntryTag"></div>
+<div id="blog_post_info">
+</div>
+<div class="clear"></div>
+<div id="post_next_prev"></div>
+</div>
+
+</div>
+		<p class="postfoot">
+			posted on <span id="post-date">2015-03-18 17:04</span> <a href='http://www.cnblogs.com/sevenyuan/'>Bill Yuan</a> 阅读(<span id="post_view_count">...</span>) 评论(<span id="post_comment_count">...</span>)  <a href ="http://i.cnblogs.com/EditPosts.aspx?postid=4347757" rel="nofollow">编辑</a> <a href="#" onclick="AddToWz(4347757);return false;">收藏</a>
+		</p>
+	</div>
+	<script type="text/javascript">var allowComments=false,isLogined=false,cb_blogId=60107,cb_entryId=4347757,cb_blogApp=currentBlogApp,cb_blogUserGuid='83662d84-3991-de11-ba8f-001cf0cd104b',cb_entryCreatedDate='2015/3/18 17:04:00';loadViewCount(cb_entryId);</script>
+	
+	</div><a name="!comments"></a><div id="blog-comments-placeholder"></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id='comment_form' class='commentform'>
+<a name='commentform'></a>
+<div id='divCommentShow'></div>
+<div id='comment_nav'><span id='span_refresh_tips'></span><a href='javascript:void(0);' onclick='return RefreshCommentList();' id='lnk_RefreshComments' runat='server' clientidmode='Static'>刷新评论</a><a href='#' onclick='return RefreshPage();'>刷新页面</a><a href='#top'>返回顶部</a></div>
+<div id='comment_form_container'></div>
+<div class='ad_text_commentbox' id='ad_text_under_commentbox'></div>
+<div id='ad_t2'></div>
+<div id='opt_under_post'></div>
+<div id='ad_c1' class='c_ad_block'></div>
+<div id='under_post_news'></div>
+<div id='ad_c2' class='c_ad_block'></div>
+<div id='under_post_kb'></div>
+<div id='HistoryToday' class='c_ad_block'></div>
+<script type='text/javascript'>
+$(function () {
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverAdT2();
+    deliverAdC1();
+    deliverAdC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);    
+});
+</script>
+</div>
+
+
+</div>
+<div id="rightmenu">
+	
+		
+<h3>导航</h3>
+<ul>
+<li><a id="MyLinks1_HomeLink" href="http://www.cnblogs.com/">博客园</a></li>
+<li><a id="MyLinks1_MyHomeLink" href="http://www.cnblogs.com/sevenyuan/">首页</a></li>
+<li><a id="MyLinks1_NewPostLink" rel="nofollow" href="http://i.cnblogs.com/EditPosts.aspx?opt=1">新随笔</a></li>
+<li><a id="MyLinks1_ContactLink" accesskey="9" rel="nofollow" href="http://msg.cnblogs.com/send/Bill%20Yuan">联系</a></li>
+<li><a id="MyLinks1_Syndication" href="http://www.cnblogs.com/sevenyuan/rss">订阅</a><a id="MyLinks1_XMLLink" href="http://www.cnblogs.com/sevenyuan/rss"><img src="http://www.cnblogs.com/images/xml.gif" alt="订阅" /></a></li>
+<li><a id="MyLinks1_Admin" rel="nofollow" href="http://i.cnblogs.com/">管理</a></li>
+</ul>
+		
+<h3>公告</h3>
+<div class="newsItem">
+	<div id="blog-news"></div><script type="text/javascript">loadBlogNews();</script>
+</div>					
+		<div id="blog-calendar" style="display:none"></div><script type="text/javascript">loadBlogDefaultCalendar();</script>
+		
+<h3>统计</h3>
+<ul>
+	<li>随笔 - 667</li>
+	<li>文章 - 0</li>
+	<li>评论 - 26</li>
+	<li>引用 - 0</li>
+ </ul>
+		<div id="blog-sidecolumn"></div><script type="text/javascript">loadBlogSideColumn();</script>
+		
+<div id="footer">
+	Powered by: 
+	<br />
+	<a id="Footer1_Hyperlink3" href="http://www.cnblogs.com/" style="font-family:Verdana;font-size:12px;">博客园</a>
+	<br />
+	Copyright &copy; Bill Yuan
+</div>
+	
+</div>			
+			
+	
+
+</body>
+</html>
